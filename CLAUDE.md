@@ -8,12 +8,12 @@
 
 - 페이지·라우팅·페이지 연결 작업 → `docs/ia.md`
 - 상태 관리·API·스타일링 판단이 필요할 때 → `docs/architecture.md`
-- 코드 작성 시 → `docs/conventions.md`
+- 코드 작성 시 → `docs/convention.md`
 - api 연결 작업 시 -> `api-spec.md`
 
 ## 기술 스택
 
-React, Vite, TypeScript, Tailwind CSS, React Router DOM, Zustand, Axios, ESLint, Prettier
+React, Vite, TypeScript, Tailwind CSS, React Router DOM, TanStack Query, Zustand, Axios, ESLint, Prettier
 
 패키지 매니저는 `pnpm`만 사용한다 (`npm`, `yarn` 금지).
 
