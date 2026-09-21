@@ -1,0 +1,8 @@
+dist
+node_modules
+pnpm-lock.yaml
+
+# 문서·템플릿은 기존 서식을 유지한다
+*.md
+.github
+.coderabbit.yaml
