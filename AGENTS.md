@@ -12,14 +12,16 @@
 
 - 페이지 구조, 라우팅, 페이지 연결 → `docs/ia.md`
 - 상태 관리, API 구조, 폴더 구조, 스타일링 → `docs/architecture.md`
-- 코드 작성 및 수정 → `docs/conventions.md`
+- 코드 작성 및 수정 → `docs/convention.md`
 - 실제 API 연결 및 요청/응답 타입 → `api-spec.md`
 
 여러 영역에 걸친 작업이라면 관련 문서를 모두 확인한다.
 
 ## 기술 스택
 
-React, Vite, TypeScript, Tailwind CSS, React Router DOM, Zustand, Axios, ESLint, Prettier
+React, Vite, TypeScript, Tailwind CSS, React Router DOM, TanStack Query, Zustand, Axios, ESLint, Prettier
+
+아이콘은 `lucide-react`(일반 UI)와 `vite-plugin-svgr`(프로젝트 전용 SVG)를 사용한다.
 
 패키지 매니저는 `pnpm`만 사용한다. `npm`, `yarn`은 사용하지 않는다.
 
@@ -48,6 +50,7 @@ src/
 - 두 개 이상 페이지에서 실제로 공유될 때만 `shared/`로 이동한다.
 - `Work`, `Student`, `Booth` 등 공통 도메인 타입은 `shared/types/`에서 관리한다.
 - GNB, Footer 등 전역 공통 UI는 `shared/components/`에서 관리한다.
+- Figma에서 export한 전용 SVG는 `shared/assets/icons/`에서 관리한다. 사용 규칙은 `docs/convention.md`의 Styling > 아이콘을 따른다.
 
 ## 핵심 규칙
 

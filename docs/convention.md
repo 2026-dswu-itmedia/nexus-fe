@@ -243,6 +243,40 @@ const [isOpen, setIsOpen] = useState(false);
 - 반응형 레이아웃을 고려한다.
 - 모바일에서 의도하지 않은 가로 스크롤이 발생하지 않도록 확인한다.
 
+### 아이콘
+
+기본 UI 아이콘(화살표, X, 메뉴, 검색, 공유, chevron 등)은 `lucide-react`를 사용한다.
+
+```tsx
+import { ChevronRight, X, Search } from 'lucide-react';
+```
+
+Lucide에 동일하거나 유사한 아이콘이 있으면 SVG를 별도로 추가하지 않는다.
+
+프로젝트 고유 아이콘, 브랜드 아이콘, Figma에서 별도 제작된 그래픽만 SVG로 사용한다. 파일은 `shared/assets/icons/`에 두고, `<img src="...">` 대신 `?react` import로 React Component처럼 사용한다.
+
+```tsx
+// Bad
+<img src={guideIcon} alt="" />;
+
+// Good
+import Guide from '@/shared/assets/icons/Guide.svg?react';
+
+<Guide className="h-6 w-6" />;
+```
+
+단색 아이콘은 SVG 내부의 고정 색상 대신 `currentColor`를 사용해 Tailwind `text-*`로 색을 제어한다.
+
+```svg
+<!-- Bad -->
+<path fill="#000000" />
+
+<!-- Good -->
+<path fill="currentColor" />
+```
+
+고정 색상을 의도한 일러스트나 브랜드 그래픽은 임의로 변경하지 않는다.
+
 ---
 
 ## 코드 품질

@@ -15,6 +15,8 @@
 
 React, Vite, TypeScript, Tailwind CSS, React Router DOM, TanStack Query, Zustand, Axios, ESLint, Prettier
 
+아이콘은 `lucide-react`(일반 UI), `vite-plugin-svgr`(프로젝트 전용 SVG)를 사용한다.
+
 패키지 매니저는 `pnpm`만 사용한다 (`npm`, `yarn` 금지).
 
 ## 명령어
@@ -38,6 +40,7 @@ src/
 
 - 한 페이지에서만 쓰는 코드는 해당 페이지 폴더에 둔다. 두 개 이상 페이지에서 실제로 공유될 때만 `shared/`로 옮긴다.
 - 핵심 도메인 타입(Work, Student, Booth)은 `shared/types/`, GNB·Footer는 `shared/components/`에서 관리한다.
+- Figma에서 export한 전용 SVG는 `shared/assets/icons/`에 둔다. 사용 규칙은 `docs/convention.md`의 Styling > 아이콘을 따른다.
 
 ## 핵심 규칙
 
