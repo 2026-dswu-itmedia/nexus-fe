@@ -1,0 +1,11 @@
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-gray-100 text-black antialiased;
+    /* 모바일 탭 시 나타나는 기본 하이라이트 제거 */
+    -webkit-tap-highlight-color: transparent;
+  }
+}
