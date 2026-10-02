@@ -19,7 +19,8 @@
    - 필요한 파일은 `git diff origin/develop...HEAD -- <파일>`로 실제 변경 내용을 확인한다
 
 3. PR 제목 작성
-   - 형식: `[Type] 한 줄 요약` (이슈 제목과 동일한 형식, 요약은 한국어)
+   - 형식: `Type: 한 줄 요약` (대괄호 없이 콜론 사용, 요약은 한국어)
+     - 이슈 제목은 `[Type] 요약` 형식이지만 PR 제목에는 대괄호를 쓰지 않는다. ex) `Chore: 디자인 토큰(theme.css) 추가`
    - Type 선택 기준:
      | Type | 사용 시점 |
      |------|----------|
@@ -47,7 +48,7 @@
    git push -u origin <현재 브랜치>
    gh pr create \
      --base develop \
-     --title "[Feature] 로그인 API 연결" \
+     --title "Feature: 로그인 API 연결" \
      --body-file /tmp/pr-body.md
 ```
 
