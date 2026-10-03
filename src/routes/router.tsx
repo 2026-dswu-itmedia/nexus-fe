@@ -7,13 +7,13 @@ import StudentDetail from '@/pages/students/StudentDetail';
 import Students from '@/pages/students/Students';
 import WorkDetail from '@/pages/works/WorkDetail';
 import Works from '@/pages/works/Works';
-import Layout from '@/shared/components/Layout';
+import MainLayout from '@/shared/components/MainLayout';
 import NotFound from '@/shared/components/NotFound';
 import { createBrowserRouter } from 'react-router-dom';
 
 const router = createBrowserRouter([
   {
-    element: <Layout />,
+    element: <MainLayout />,
     children: [
       { path: '/', element: <About /> },
       { path: '/works', element: <Works /> },
@@ -24,9 +24,10 @@ const router = createBrowserRouter([
       { path: '/event', element: <Event /> },
       { path: '/event/sponsor', element: <Sponsor /> },
       { path: '/event/partner', element: <Partner /> },
-      { path: '*', element: <NotFound /> },
     ],
   },
+  // 404는 상단 네비게이션 없이 단독 화면으로 보여준다.
+  { path: '*', element: <NotFound /> },
 ]);
 
 export default router;
