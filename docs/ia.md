@@ -11,7 +11,9 @@
 /map                  MAP
 /event                EVENT
 /event/sponsor        SPONSOR
+/event/sponsor/:sponsorId  SPONSOR 상세 (협찬사)
 /event/partner        PARTNER
+/event/partner/:partnerId  PARTNER 상세 (제휴사)
 *                     404
 ```
 
@@ -65,11 +67,21 @@
 ### `/event/sponsor` — SPONSOR
 
 - 협찬 기업 목록: 기업명, 대표 사진, 한 줄 소개, 기업 페이지 링크
+- 기업 클릭 시 `/event/sponsor/:sponsorId` 상세로 이동
+
+### `/event/sponsor/:sponsorId` — SPONSOR 상세
+
+- 협찬사 소개, 기업 페이지 링크, 협찬 물품 소개
 
 ### `/event/partner` — PARTNER
 
 - 제휴 기업 목록: 기업명, 대표 사진, 한 줄 소개, 기업 페이지 링크
 - 현장 QR 인증 및 쿠폰 발급, 내 쿠폰 조회 (`docs/api-spec.md`의 쿠폰 API 사용)
+- 쿠폰 발급 후 매장 클릭 시 `/event/partner/:partnerId` 상세로 이동
+
+### `/event/partner/:partnerId` — PARTNER 상세
+
+- 제휴사 소개, 매장 위치 링크, 쿠폰 표시
 
 ## 페이지 연결 (변경 금지)
 
@@ -77,8 +89,8 @@
 WORKS 목록 → WORKS 상세
 WORKS 상세 ── 팀원 클릭 ──────→ STUDENTS 상세 ── 참여 작품 ──→ WORKS 상세
 WORKS 상세 ── 부스 배치도 CTA ─→ MAP ── 부스 클릭 ──→ WORKS 상세
-EVENT ── SPONSOR 영역 클릭 ──→ SPONSOR
-EVENT ── PARTNER 영역 클릭 ──→ PARTNER
+EVENT ── SPONSOR 영역 클릭 ──→ SPONSOR ── 기업 클릭 ──→ SPONSOR 상세
+EVENT ── PARTNER 영역 클릭 ──→ PARTNER ── 매장 클릭 ──→ PARTNER 상세
 ```
 
 WORKS 상세에서 MAP으로 이동할 때는 해당 부스를 하이라이트할 수 있도록 작품 또는 부스 식별 정보를 함께 전달한다.
@@ -121,7 +133,7 @@ interface BoothTypes {
 
 ### Footer
 
-- 전 페이지 공통. 페이지마다 따로 구현하지 않는다.
+- ABOUT 페이지 하단에만 표시한다. 컴포넌트는 `shared/components/Footer.tsx` 하나이며 `About.tsx`가 렌더한다.
 
 ### 카카오톡 공유
 

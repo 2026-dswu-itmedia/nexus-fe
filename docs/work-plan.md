@@ -24,14 +24,16 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 | `[Event] Home.png`                                                                        | `/event`                     | 메인         |
 | (EVENT 홈의 SPONSOR 목록과 동일)                                                          | `/event/sponsor`             | 메인         |
 | `Sponsor] 협찬사 상세 - 인클리어/이너감/체리미마카.png`                                   | `/event/sponsor/:sponsorId`  | 상세(네이비) |
-| `Partner] Step1.png`, `Step2.png`, `Loading.png`                                          | `/event/partner`             | 메인         |
+| `Partner] Step1.png`, `Step2.png`, `Loading.png`                                          | `/event/partner`             | 상세         |
 | `Partner] 제휴사 상세 - 베리베리/쥬얼창동/오스시.png`                                     | `/event/partner/:partnerId`  | 상세(네이비) |
 | `404.png`                                                                                 | `*`                          | 없음(단독)   |
 
 레이아웃 정의:
 
-- **메인 레이아웃**: 상단 중앙 로고 + 가로 스크롤 탭형 GNB + `Outlet`. Footer 없음.
-- **상세 레이아웃**: `←` 뒤로가기 헤더(선택적 제목) + `Outlet`. 협찬사·제휴사 상세는 네이비 배경.
+- **루트 레이아웃**(`RootLayout`): `Outlet` + `ScrollRestoration`. `errorElement`(`ErrorBoundary`)도 여기에 붙는다.
+- **메인 레이아웃**(`MainLayout`): 상단 중앙 로고 + 가로 스크롤 탭형 GNB(`TopNavigation`) + `main px-5` + `Suspense` + `Outlet`. Footer 없음.
+- **상세 레이아웃**(`DetailLayout`): 배경(light/dark) + `main px-5` + `Suspense` + `Outlet`. `←` 뒤로가기 헤더(`BackHeader`, 선택적 제목)는 각 페이지가 렌더한다. 협찬사·제휴사 상세는 네이비 배경(`variant="dark"`).
+- 모든 페이지의 좌우 padding은 1.25rem(`px-5`)이며 레이아웃 `main`이 담당한다. GNB·Footer·하단 full-width 버튼만 예외.
 - **Footer는 ABOUT 페이지에만 존재**한다. 파일은 `shared/components/Footer.tsx`에 두고 `About.tsx`가 직접 렌더한다.
 - 페이지 배경은 `ivory-bg`(#FFFDF8).
 
@@ -48,39 +50,40 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 
 ### 2-1. 데이터·타입·유틸 (shared)
 
-- [ ] `shared/types/exhibition.ts`: `Team`, `Student`, `Work`, `Exhibition` interface (`docs/api-spec.md` 1장 그대로). `Work.category`는 string 유지.
-- [ ] `shared/constants/category.ts`: IA 카테고리 ↔ JSON 표기 매핑. `전체(null)`, `웹/앱`, `게임`, `VR`. 필터는 `category.includes(match)`로 판단.
-- [ ] `shared/utils/exhibition.ts`: `exhibition.json` import 후 `getWorkById`, `getStudentById`, `getTeamById`, `getStudentsByIds`, `getWorksByIds`. 단순 함수(훅·쿼리 아님).
-- [ ] `shared/utils/image.ts`: `import.meta.glob('@/shared/assets/images/students/*', { eager: true, import: 'default' })`로 파일명 → URL 맵을 만들고 `getStudentImage(fileName)`, `getWorkImage(fileName)` 제공. 매칭 실패 시 `undefined` 반환(렌더에서 회색 placeholder).
-- [ ] `shared/apis/api.ts`에 `withCredentials: true` 추가. `shared/types/api.ts`에 `ApiResponse<T> = { data: T }`, `ApiError = { error: { code; message; details? } }` 정의.
-- [ ] `shared/apis/visitorSession.ts`: `postVisitorSession()` (works 감상평, event 쿠폰 두 곳에서 쓰므로 shared).
+- [x] `shared/types/exhibition.ts`: `Team`, `Student`, `Work`, `Exhibition` interface (`docs/api-spec.md` 1장 그대로). `Work.category`는 string 유지.
+- [x] `shared/constants/category.ts`: IA 카테고리 ↔ JSON 표기 매핑. `전체(null)`, `웹/앱`, `게임`, `VR`. 필터는 `category.includes(match)`로 판단.
+- [x] `shared/utils/exhibition.ts`: `exhibition.json` import 후 `getWorkById`, `getStudentById`, `getTeamById`, `getStudentsByIds`, `getWorksByIds`. 단순 함수(훅·쿼리 아님).
+- [x] `shared/utils/image.ts`: `import.meta.glob('@/shared/assets/images/students/*', { eager: true, import: 'default' })`로 파일명 → URL 맵을 만들고 `getStudentImage(fileName)`, `getWorkImage(fileName)` 제공. 매칭 실패 시 `undefined` 반환(렌더에서 회색 placeholder).
+- [x] `shared/apis/api.ts`에 `withCredentials: true` 추가. `shared/types/api.ts`에 `ApiResponse<T> = { data: T }`, `ApiError = { error: { code; message; details? } }` 정의.
+- [x] `shared/apis/visitorSession.ts`: `postVisitorSession()` (works 감상평, event 쿠폰 두 곳에서 쓰므로 shared).
 
 ### 2-2. 레이아웃·라우팅
 
-- [ ] `shared/components/GNB.tsx` 재구현: 상단 중앙 `logo-nexus.svg`(`?react`), 아래 가로 스크롤 탭 행. 비활성 탭 = 흰 배경 + border, 활성 탭 = `navy-100` 배경 + 흰 글자 + 살짝 기울어진(회전) 형태. 활성 탭이 보이도록 마운트 시 `scrollIntoView`. sticky + `shadow-gnb`. `GNB_MENUS` 순서 유지.
-- [ ] `shared/components/Footer.tsx` 재구현: 네이비 배경, "2026 덕성여자대학교 IT미디어공학전공 / 제14회 졸업전시회 웹사이트 / © 2026 IT Media Engineering all rights reserved. / Developed by 김시연 목소연 송은지" (시안 `[About].png` 하단). **ABOUT에서만 사용**하므로 `Layout`에서 제거하고 Phase 2에서 `About.tsx`가 렌더한다.
-- [ ] `shared/components/Layout.tsx`: GNB + `Outlet`만. 배경 `ivory-bg`, `max-w-mobile`. `main`의 고정 padding 제거 여부는 시안 기준으로 판단(MAP·EVENT는 좌우 20px, 상세는 0).
-- [ ] `global.css`의 `body` 배경을 시안에 맞게 조정(`bg-gray-100` → 모바일 폭 밖 배경 확인).
-- [ ] `shared/components/BackHeader.tsx`: `ArrowLeft`(lucide) + 선택적 `title`. `navigate(-1)`. 네이비 페이지용 `variant: 'dark'` prop(흰 아이콘·글자).
-- [ ] `shared/components/DetailLayout.tsx`: `BackHeader` + `Outlet`. 상세 4개 라우트가 사용.
-- [ ] `shared/components/NotFound.tsx` 재구현: 중앙 404 그래픽(이미지 파일 수령 전까지 텍스트 "404"), 하단 고정 네이비 full-width 버튼 "NEX:US 홈페이지 바로가기" → `/`.
-- [ ] `shared/components/ErrorBoundary.tsx`(class component) + `shared/components/PageFallback.tsx`(로딩 스피너, `Loader2` lucide). `routes/router.tsx`를 `React.lazy` + `Suspense` + `errorElement`로 재구성하고 `/event/sponsor/:sponsorId`, `/event/partner/:partnerId` 추가.
-- [ ] `docs/ia.md` 라우팅 표에 두 상세 라우트 추가, EVENT 연결 설명 갱신, Footer 항목을 "ABOUT에만 표시"로 수정(사용자 승인된 변경).
+- [x] `shared/components/TopNavigation.tsx`(구 GNB) 재구현: 상단 중앙 `logo-nexus.svg`(`?react`), 아래 가로 스크롤 탭 행. 비활성 탭 = 흰 배경 + border, 활성 탭 = `navy-100` 배경 + 흰 글자 + `-rotate-8`(Figma 값) + transition. 경로 변경 시 활성 탭을 좌측 끝으로 `scrollTo`. 데스크톱용 마우스 드래그·휠 가로 스크롤(휠은 motion `animate`로 부드럽게). sticky + `shadow-gnb`. `GNB_MENUS` 순서 유지.
+- [x] `shared/components/Footer.tsx` 재구현: 네이비 배경, 4줄 문구(시안 `[About].png` 하단). **ABOUT에서만 사용**하므로 레이아웃에서 제거, Phase 2에서 `About.tsx`가 렌더. `main px-5` 안에서 full-width가 되도록 `-mx-5`.
+- [x] `shared/components/MainLayout.tsx`(구 Layout): TopNavigation + `main px-5` + `Suspense(PageFallback)` + `Outlet`. 배경 `ivory-bg`, `max-w-mobile`.
+- [x] `shared/components/RootLayout.tsx`: `Outlet` + `ScrollRestoration`. 루트 라우트 element.
+- [x] `global.css`: body는 `bg-gray-100` 유지(모바일 폭 밖), 레이아웃 컨테이너가 `ivory-bg`. `font-pretendard` 적용, `scrollbar-hide` 유틸 추가.
+- [x] `shared/components/BackHeader.tsx`: `ArrowLeft`(lucide) + 선택적 `title`. `history.length > 1`이면 `navigate(-1)`, 아니면 `/`. 네이비 페이지용 `variant: 'dark'`.
+- [x] `shared/components/DetailLayout.tsx`: 배경(`variant` light/dark) + `main px-5` + `Suspense` + `Outlet`. `BackHeader`는 페이지가 렌더. 상세 4개 + `/event/partner` 라우트가 사용.
+- [x] `shared/components/NotFound.tsx` 재구현: `img-404-graphic.svg` 중앙, 하단 네이비 full-width 버튼 "NEX:US 홈페이지 바로가기" → `/`. 좌우 1.25rem·상하 2.5rem padding. 레이아웃 밖 단독 라우트.
+- [x] `shared/components/ErrorBoundary.tsx`(`useRouteError` 함수 컴포넌트, 루트 `errorElement`) + `shared/components/PageFallback.tsx`(`LoaderCircle` 스피너). `routes/pages.ts`에 11개 페이지 `React.lazy`, `routes/router.tsx`를 RootLayout → MainLayout / DetailLayout / DetailLayout dark 그룹으로 재구성, `/event/sponsor/:sponsorId`, `/event/partner/:partnerId` 추가(placeholder 페이지 `SponsorDetail.tsx`, `PartnerDetail.tsx`).
+- [x] `docs/ia.md` 라우팅 표에 두 상세 라우트 추가, EVENT 연결 설명 갱신, Footer 항목을 "ABOUT에만 표시"로 수정.
 
 ### 2-3. 공통 UI 컴포넌트
 
-- [ ] `shared/components/SearchInput.tsx`: controlled input, placeholder prop, 오른쪽 `ic-search-24.svg`. 밑줄(border-b navy) 스타일.
-- [ ] `shared/components/FilterTabs.tsx`: 텍스트 탭 목록, 선택 항목은 `navy-100` semibold, 나머지 `subtext-700`. 가로 스크롤 허용. 제네릭 `items: { label; value }[]`, `value`, `onChange`.
-- [ ] `shared/components/TeamBadge.tsx`: 팀 아이콘(●● 모양, `ic-*`에 없으면 lucide `Users`로 대체 후 사용자 확인) + 팀명.
-- [ ] `shared/components/KeywordChip.tsx`: border + `regular-12` 칩.
-- [ ] `shared/components/WorkListItem.tsx`: 썸네일(68×48 비율) + 제목(`semibold-16`) + 팀원 이름 나열(`regular-14 subtext-700`) + `ChevronRight`. `Link to=/works/:id`.
-- [ ] `shared/components/Button.tsx`: `variant: 'primary'(navy) | 'outline'(white)`, full-width, 오른쪽 선택 아이콘.
-- [ ] `shared/components/LinkRow.tsx`: 아이콘 + 텍스트 + `ic-go-link-24` 가로 바(`<a>` 외부 링크). 배경색 prop으로 네이비 페이지 대응.
+- [x] `shared/components/SearchInput.tsx`: controlled input, placeholder prop, 오른쪽 `ic-search-24.svg`. 밑줄(border-b navy) 스타일.
+- [x] `shared/components/FilterTabs.tsx`: 텍스트 탭 목록, 선택 항목은 `navy-100` semibold, 나머지 `subtext-700`. 가로 스크롤 허용. 제네릭 `items: { label; value }[]`, `value`, `onChange`.
+- [x] `shared/components/TeamBadge.tsx`: 팀 아이콘(`symbol-decor.svg`) + 팀명.
+- [x] `shared/components/KeywordChip.tsx`: border 칩.
+- [x] `shared/components/WorkListItem.tsx`: 썸네일(68×45) + 제목(`semibold-16`) + 팀원 이름 나열(`regular-14 subtext-700`) + `ChevronRight`. `Link to=/works/:id`.
+- [x] `shared/components/Button.tsx`: `variant: 'primary'(navy) | 'outline'(white)`, full-width, 오른쪽 선택 아이콘. motion `whileTap` 축소 인터랙션.
+- [x] `shared/components/LinkRow.tsx`: 아이콘 + 텍스트 + `ic-go-link-24` 가로 바(`<a>` 외부 링크). `variant: 'light' | 'dark'`로 네이비 페이지 대응.
 
 ### 2-4. 검증
 
-- [ ] `pnpm dev`로 5개 메뉴 이동 시 활성 탭·스크롤 확인, 존재하지 않는 경로에서 404, 상세 라우트에서 뒤로가기 헤더 표시.
-- [ ] `pnpm build`, `pnpm lint`.
+- [x] `pnpm dev`로 5개 메뉴 이동 시 활성 탭·스크롤 확인, 존재하지 않는 경로에서 404, 상세 라우트에서 뒤로가기 헤더 표시.
+- [x] `pnpm build`, `pnpm lint`.
 
 ## 3. Phase 2 — ABOUT `/` (브랜치 `feat/about`)
 
@@ -188,6 +191,19 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 - 2026-10-03: WORKS 상세 하단 화살표 = 감상평 페이지네이션. 이전/다음 작품 CTA는 시안에 없어 미구현.
 - 2026-10-03: Footer는 ABOUT 페이지에만 존재한다(사용자 확인). `Layout`에는 넣지 않고 `About.tsx`에서만 렌더. `docs/ia.md`의 "Footer 전 페이지 공통" 문구를 함께 수정한다.
 - 2026-10-03: 부가 기능 중 페이지 lazy loading + Error Boundary만 이번 범위에 포함.
+- 2026-10-03 (Phase 1 구현 중 확정):
+  - 모든 페이지 좌우 padding 1.25rem(`px-5`)은 레이아웃 `main`이 담당. GNB·Footer·full-width 버튼만 예외. 404는 좌우 1.25rem·상하 2.5rem.
+  - 파일명: `Layout.tsx` → `MainLayout.tsx`, `GNB.tsx` → `TopNavigation.tsx`. `RootLayout.tsx`(Outlet + ScrollRestoration) 추가. `GNB_MENUS` 상수명은 유지.
+  - `ErrorBoundary`는 class가 아닌 `useRouteError` 함수 컴포넌트. data router 내장 경계를 쓰므로 별도 class 불필요.
+  - `DetailLayout`은 배경·padding·Suspense만 담당하고 `BackHeader`는 각 페이지가 렌더(협찬사·제휴사 상세 제목이 페이지 데이터에서 나오기 때문). `/event/partner`도 상세 레이아웃(시안에 GNB 없음).
+  - `Suspense`는 루트가 아니라 각 레이아웃의 `Outlet` 둘레에 둔다(페이지 전환 시 GNB 유지).
+  - lazy 페이지 선언은 `routes/pages.ts`로 분리(`router.tsx`에 두면 `react-refresh/only-export-components` 위반).
+  - 아이콘 색 제어: 사용하는 `ic-*` SVG의 고정색을 `currentColor`로 직접 수정(`ic-search-24`, `ic-go-link-24`, `ic-location-24` 완료). svgr 전역 옵션은 고정색 그래픽까지 바꾸므로 사용 안 함.
+  - Pretendard는 `main.tsx`에서 `pretendardvariable-dynamic-subset.css` import, body `font-pretendard`. body 배경은 `gray-100`(모바일 폭 밖), 컨테이너는 `ivory-bg`.
+  - TeamBadge 팀 아이콘은 `symbol-decor.svg`(사용자 확인).
+  - 활성 탭 회전은 Figma 값 `-8deg`. 탭 전환·회전은 transition 0.3s. 활성 탭은 좌측 끝 정렬로 스크롤.
+  - 애니메이션 라이브러리 `motion` 추가(사용자 요청). Button `whileTap` 축소, TopNavigation 휠 스크롤 애니메이션에 사용. 메인 청크가 500KB 경고를 넘김(motion 포함) — 추후 필요 시 검토.
+  - Phase 4 상세 2개(`SponsorDetail.tsx`, `PartnerDetail.tsx`)는 `<h1>` placeholder로 생성해 라우트 연결.
 - (확인 필요) PARTNER QR 토큰의 URL 파라미터명 (`qrToken` 가정).
 - (확인 필요) 스튜디오별 작품 배치, 제휴사 매장 지도 URL, 협찬사 링크 URL·소개문, 학과 홈페이지 URL, 지도 임베드 URL.
 - (확인 필요) PARTNER Step2에서 첫 행 chevron / 나머지 다운로드 아이콘의 의미.
