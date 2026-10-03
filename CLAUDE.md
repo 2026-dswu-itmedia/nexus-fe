@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-졸업 작품을 소개하는 전시회 웹사이트 프론트엔드. 페이지는 `ABOUT(/)`, `WORKS`, `STUDENTS`, `MAP` 4개이며 별도 랜딩 페이지는 없다.
+졸업 작품을 소개하는 전시회 웹사이트 프론트엔드. 페이지는 `ABOUT(/)`, `WORKS`, `STUDENTS`, `MAP`, `EVENT` 5개이며 별도 랜딩 페이지는 없다.
 
 ## 문서 안내
 
@@ -32,7 +32,7 @@ pnpm lint
 
 ```text
 src/
-├── pages/      # about, works, students, map
+├── pages/      # about, works, students, map, event
 │   └── <page>/ # 필요 시 apis, components, constants, hooks, types, utils
 ├── shared/     # apis, assets, components, constants, hooks, types, utils
 └── routes/
