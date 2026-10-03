@@ -4,8 +4,17 @@
   }
 
   body {
-    @apply bg-gray-100 text-black antialiased;
+    @apply bg-gray-100 font-pretendard text-black antialiased;
     /* 모바일 탭 시 나타나는 기본 하이라이트 제거 */
     -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* 가로 스크롤 탭(GNB, FilterTabs)에서 스크롤바를 숨긴다 */
+@utility scrollbar-hide {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 }
