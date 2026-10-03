@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-졸업 작품을 소개하는 전시회 웹사이트 프론트엔드. 페이지는 `ABOUT(/)`, `WORKS`, `STUDENTS`, `MAP` 4개이며 별도 랜딩 페이지는 없다.
+졸업 작품을 소개하는 전시회 웹사이트 프론트엔드. 페이지는 `ABOUT(/)`, `WORKS`, `STUDENTS`, `MAP`, `EVENT` 5개이며 별도 랜딩 페이지는 없다.
 
 ## 문서 안내
 
@@ -9,7 +9,8 @@
 - 페이지·라우팅·페이지 연결 작업 → `docs/ia.md`
 - 상태 관리·API·스타일링 판단이 필요할 때 → `docs/architecture.md`
 - 코드 작성 시 → `docs/convention.md`
-- api 연결 작업 시 -> `api-spec.md`
+- api 연결 작업 시 -> `docs/api-spec.md`
+- 작업 진행 순서·완료 상태 확인 → `docs/work-plan.md` (세션 시작 시 먼저 읽고, 종료 시 체크박스 갱신)
 
 ## 기술 스택
 
@@ -32,7 +33,7 @@ pnpm lint
 
 ```text
 src/
-├── pages/      # about, works, students, map
+├── pages/      # about, works, students, map, event
 │   └── <page>/ # 필요 시 apis, components, constants, hooks, types, utils
 ├── shared/     # apis, assets, components, constants, hooks, types, utils
 └── routes/
