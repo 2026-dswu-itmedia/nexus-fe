@@ -1,4 +1,7 @@
 import About from '@/pages/about/About';
+import Event from '@/pages/event/Event';
+import Partner from '@/pages/event/Partner';
+import Sponsor from '@/pages/event/Sponsor';
 import Map from '@/pages/map/Map';
 import StudentDetail from '@/pages/students/StudentDetail';
 import Students from '@/pages/students/Students';
@@ -18,6 +21,9 @@ const router = createBrowserRouter([
       { path: '/students', element: <Students /> },
       { path: '/students/:studentId', element: <StudentDetail /> },
       { path: '/map', element: <Map /> },
+      { path: '/event', element: <Event /> },
+      { path: '/event/sponsor', element: <Sponsor /> },
+      { path: '/event/partner', element: <Partner /> },
       { path: '*', element: <NotFound /> },
     ],
   },

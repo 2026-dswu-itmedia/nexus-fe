@@ -4,4 +4,5 @@ export const GNB_MENUS = [
   { label: 'WORKS', path: '/works' },
   { label: 'STUDENTS', path: '/students' },
   { label: 'MAP', path: '/map' },
+  { label: 'EVENT', path: '/event' },
 ] as const;
