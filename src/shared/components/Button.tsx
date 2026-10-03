@@ -1,3 +1,4 @@
+import { motion } from 'motion/react';
 import type { ReactNode } from 'react';
 
 interface ButtonProps {
@@ -23,15 +24,17 @@ const Button = ({
   type = 'button',
 }: ButtonProps) => {
   return (
-    <button
+    // 누르는 동안 살짝 줄었다가 떼면 스프링으로 돌아온다. disabled일 때는 반응하지 않는다.
+    <motion.button
       type={type}
       onClick={onClick}
       disabled={disabled}
+      whileTap={disabled ? undefined : { scale: 0.97 }}
       className={`text-semibold-14 disabled:bg-subtext-900 shadow-card flex w-full items-center justify-center gap-2 py-3 ${VARIANT_CLASS[variant]}`}
     >
       {children}
       {icon}
-    </button>
+    </motion.button>
   );
 };
 
