@@ -1,5 +1,5 @@
-import TopNavigation from '@/shared/components/TopNavigation';
 import PageFallback from '@/shared/components/PageFallback';
+import TopNavigation from '@/shared/components/TopNavigation';
 import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 
