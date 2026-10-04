@@ -96,7 +96,7 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 - [x] `components/NaverMap.tsx` + `components/LocationSection.tsx`: 네이버 지도 JS API v3(`ncpKeyId=VITE_NAVER_MAP_CLIENT_ID`)를 ABOUT 진입 시 동적 로드, 4:3 영역에 중심·마커(`EXHIBITION_LOCATION` 37.655211, 127.048241 = 창동 아우르네). 컨트롤 숨김, 키 없거나 로드 실패 시 회색 영역 유지. 주소 2줄 + `ic-copy-16` 클릭 시 `navigator.clipboard.writeText`, 성공 시 3초간 체크 + "복사됨"으로 전환(motion `AnimatePresence` 페이드·슬라이드).
 - [x] `components/QuickLinks.tsx`: `LinkRow` 2개(`logo-duksung-24.svg`, `logo-instagram-24.svg`), `gap-2`.
 - [x] `components/Committee.tsx`: 네이비 제목 바(38px) "졸업준비위원회" + 3행(36px, border + `shadow-card`, 가운데 행 `-rotate-2`). 직책 `regular-14 subtext-700` + 이름 `regular-16 subtext-500`.
-- [x] `components/FloatingActions.tsx`: 우측 하단 FAB 2개(시안 `FAB.png`: 위 공유 `ic-share-24`, 아래 `ic-go-to-top-24`). 48px 흰 원형, `shadow-fab`, `subtext-700`, 세로 `gap-2.5`, **항상 표시**(사용자 결정). 공유는 카카오 보류 동안 Web Share API, 미지원 브라우저는 링크 복사 후 3초간 체크 아이콘. `fixed` 래퍼를 `max-w-mobile px-5`로 맞춰 데스크톱에서도 콘텐츠 우측에 붙는다.
+- [x] `components/FloatingActions.tsx`: 우측 하단 FAB 2개(시안 `FAB.png`: 위 공유 `ic-share-24`, 아래 `ic-go-to-top-24`). 48px 흰 원형, `shadow-fab`, `subtext-700`, 세로 `gap-2.5`, **항상 표시**(사용자 결정). 공유는 카카오톡 초대장(`shared/utils/kakaoShare.ts`의 `shareKakaoTemplate`, 메시지 템플릿 ID `INVITATION_TEMPLATE_ID` = 137738). 키 미설정·SDK 로드 실패 시 Web Share API, 미지원 브라우저는 링크 복사 후 3초간 체크 아이콘. `fixed` 래퍼를 `max-w-mobile px-5`로 맞춰 데스크톱에서도 콘텐츠 우측에 붙는다.
 - [x] `components/Reveal.tsx`: 스크롤 reveal 래퍼(motion `whileInView`, 아래 24px에서 0.5초 easeOut 페이드업, `once: true`, `amount: 0.2`, `delay` prop). `useReducedMotion`이면 애니메이션 없이 렌더. 소개 문단(구분선+문단 묶음)·일정 행·지도/주소·바로가기 행·위원회 제목/행에 적용, 행 단위 stagger 0.1초. (사용자 요청 2026-10-04)
 - [x] `About.tsx` 조립: `pt-10 gap-20 pb-25`(섹션 간 80px, 하단 100px. 5:7 키비주얼이 GNB 아래 40px에서 시작하면 시안 그래픽 하단 위치와 일치). 맨 아래에 `shared/components/Footer` 렌더(다른 페이지에는 없음).
 - [x] 검증: SSR 문자열 렌더로 전 섹션 출력·외부 링크 `target="_blank"` 확인, `pnpm build`, `pnpm lint` 통과. **브라우저 실측(가로 스크롤·클립보드 복사·FAB)은 Claude 브라우저가 로컬 포트에 접속하지 못해 미수행 — 사용자가 `pnpm dev`로 확인 필요.**
@@ -214,6 +214,7 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
   - 지도는 네이버 지도 JS API v3(사용자 요청). `@types/navermaps` devDependency 추가, `tsconfig.app.json` `types`에 `navermaps` 등록. 키는 `.env`의 `VITE_NAVER_MAP_CLIENT_ID`(`example.env`에 항목 추가). SDK는 index.html이 아닌 `NaverMap.tsx`에서 필요할 때만 script를 주입한다.
   - `ic-check-16.svg`, `ic-share-24.svg`, `ic-go-to-top-24.svg`(신규, 원본 `ic-go-to-top.svg`에 크기 접미사 추가) 고정색도 `currentColor`로 수정.
   - FAB은 스크롤량과 무관하게 항상 표시(공유 버튼이 함께 있어야 하므로, 사용자 결정 2026-10-04).
+  - 카카오톡 공유: JS SDK 2.8.3을 `shared/utils/kakaoShare.ts`에서 첫 공유 시 동적 로드(SRI 해시 포함) 후 `Kakao.init(VITE_KAKAO_JS_KEY)`. 타입은 `@types/kakao-js-sdk`가 v1(`Kakao.Link`) 기준이라 쓰지 않고 `shared/types/kakao.d.ts`에 필요한 부분만 선언. 초대장은 카카오 메시지 템플릿(ID 137738) + `Kakao.Share.sendCustom`. 카카오 디벨로퍼스 "JavaScript SDK 도메인"에 `http://localhost:5173`·배포 도메인 등록 필요.
 - (확인 필요) PARTNER QR 토큰의 URL 파라미터명 (`qrToken` 가정).
 - (확인 필요) 스튜디오별 작품 배치, 제휴사 매장 지도 URL, 협찬사 링크 URL·소개문.
 - (확인 필요) ABOUT 임시 URL: 학과 홈페이지 `https://itmedia.duksung.ac.kr/`, Instagram `https://www.instagram.com/dswu_itmedia_26/`. `pages/about/constants/about.ts`에서 교체.
@@ -222,7 +223,7 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 
 ## 10. 보류 목록 (이번 범위 제외)
 
-- 카카오톡 공유(IA 전역 요소, WORKS 상세·ABOUT의 ↗ FAB) — Kakao JS SDK + `VITE_KAKAO_JS_KEY` 필요. ABOUT의 공유 FAB은 Web Share API/링크 복사로 우선 동작하며, 도입 시 `FloatingActions.tsx`의 `handleShareClick`만 교체한다.
+- 카카오톡 공유 중 WORKS 상세의 작품별 공유(`Kakao.Share.sendDefault` 또는 별도 템플릿). ABOUT 초대장 공유는 Phase 2에서 완료했고 SDK 로더(`shared/utils/kakaoShare.ts`)를 재사용한다.
 - 제휴사 상세 "쿠폰을 이미지로 저장하기" — `html-to-image` 등 라이브러리 추가 필요.
 - 404·로딩 로띠 애니메이션(`@lottiefiles/dotlottie-react` 설치됨, 파일 미수령. ABOUT 키비주얼 로띠는 Phase 2에서 적용 완료).
 - IA에만 있고 시안·데이터에 없는 항목: STUDENTS 상세 학번·인사말·SNS·이메일, MAP 카테고리 필터, ABOUT 지하철·버스 안내.

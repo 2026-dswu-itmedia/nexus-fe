@@ -1,5 +1,7 @@
+import { INVITATION_TEMPLATE_ID } from '@/pages/about/constants/about';
 import GoToTopIcon from '@/shared/assets/icons/ic-go-to-top-24.svg?react';
 import ShareIcon from '@/shared/assets/icons/ic-share-24.svg?react';
+import { shareKakaoTemplate } from '@/shared/utils/kakaoShare';
 import { Check } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
@@ -19,8 +21,16 @@ const FloatingActions = () => {
     return () => window.clearTimeout(timerId);
   }, [isLinkCopied]);
 
-  // 카카오 공유는 보류 상태라 우선 Web Share API를 쓰고, 지원하지 않는 브라우저(데스크톱 등)는 링크를 복사한다.
+  // 카카오톡 초대장 공유가 기본. 키 미설정·SDK 로드 실패 시에는 Web Share API,
+  // 그것도 지원하지 않는 브라우저(데스크톱 등)는 링크 복사로 대신한다.
   const handleShareClick = async () => {
+    try {
+      await shareKakaoTemplate(INVITATION_TEMPLATE_ID);
+      return;
+    } catch {
+      // 아래 fallback으로 진행
+    }
+
     const shareData = { title: document.title, url: window.location.href };
     try {
       if (navigator.share) {

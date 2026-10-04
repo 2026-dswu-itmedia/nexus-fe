@@ -66,6 +66,9 @@ export const QUICK_LINKS: QuickLink[] = [
   },
 ];
 
+// 카카오 디벨로퍼스 > 도구 > 메시지 템플릿에 등록한 전시 초대장 템플릿 ID
+export const INVITATION_TEMPLATE_ID = 137738;
+
 export const COMMITTEE_MEMBERS: CommitteeMember[] = [
   { role: '위원장', name: '목소연' },
   { role: '부위원장', name: '안유빈' },
