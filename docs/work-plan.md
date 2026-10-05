@@ -97,7 +97,7 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 - [x] `components/QuickLinks.tsx`: `LinkRow` 2개(`logo-duksung-24.svg`, `logo-instagram-24.svg`), `gap-2`.
 - [x] `components/Committee.tsx`: 네이비 제목 바(38px) "졸업준비위원회" + 3행(36px, border + `shadow-card`, 가운데 행 `-rotate-2`). 직책 `regular-14 subtext-700` + 이름 `regular-16 subtext-500`.
 - [x] `components/FloatingActions.tsx`: 우측 하단 FAB 2개(시안 `FAB.png`: 위 공유 `ic-share-24`, 아래 `ic-go-to-top-24`). 48px 흰 원형, `shadow-fab`, `subtext-700`, 세로 `gap-2.5`, **항상 표시**(사용자 결정). 공유는 카카오톡 초대장(`shared/utils/kakaoShare.ts`의 `shareKakaoTemplate`, 메시지 템플릿 ID `INVITATION_TEMPLATE_ID` = 137738). 키 미설정·SDK 로드 실패 시 Web Share API, 미지원 브라우저는 링크 복사 후 3초간 체크 아이콘. `fixed` 래퍼를 `max-w-mobile px-5`로 맞춰 데스크톱에서도 콘텐츠 우측에 붙는다.
-- [x] `components/Reveal.tsx`: 스크롤 reveal 래퍼(motion `whileInView`, 아래 24px에서 0.5초 easeOut 페이드업, `once: true`, `amount: 0.2`, `delay` prop). `useReducedMotion`이면 애니메이션 없이 렌더. 소개 문단(구분선+문단 묶음)·일정 행·지도/주소·바로가기 행·위원회 제목/행에 적용, 행 단위 stagger 0.1초. (사용자 요청 2026-10-04)
+- [x] `shared/components/Reveal.tsx`(Phase 3에서 `pages/about/components`에서 이동): 스크롤 reveal 래퍼(motion `whileInView`, 아래 24px에서 0.5초 easeOut 페이드업, `once: true`, `amount: 0.2`, `delay` prop). `useReducedMotion`이면 애니메이션 없이 렌더. 소개 문단(구분선+문단 묶음)·일정 행·지도/주소·바로가기 행·위원회 제목/행에 적용, 행 단위 stagger 0.1초. (사용자 요청 2026-10-04)
 - [x] `About.tsx` 조립: `pt-10 gap-20 pb-25`(섹션 간 80px, 하단 100px. 5:7 키비주얼이 GNB 아래 40px에서 시작하면 시안 그래픽 하단 위치와 일치). 맨 아래에 `shared/components/Footer` 렌더(다른 페이지에는 없음).
 - [x] 검증: SSR 문자열 렌더로 전 섹션 출력·외부 링크 `target="_blank"` 확인, `pnpm build`, `pnpm lint` 통과. **브라우저 실측(가로 스크롤·클립보드 복사·FAB)은 Claude 브라우저가 로컬 포트에 접속하지 못해 미수행 — 사용자가 `pnpm dev`로 확인 필요.**
 
@@ -107,21 +107,24 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 
 ### 4-1. 목록
 
-- [ ] `Works.tsx`: `useState` 검색어·카테고리. `SearchInput`(placeholder "프로젝트명을 검색해주세요") + `FilterTabs`(category 상수) + `WorkListItem` 목록. 필터: 제목 `includes`(대소문자 무시) AND 카테고리 `includes`. 팀원 이름은 `getStudentsByIds(work.memberIds)`.
+- [x] `Works.tsx`: `useState` 검색어·카테고리. `SearchInput`(placeholder "프로젝트명을 검색해주세요") + `FilterTabs`(category 상수) + `WorkListItem` 목록. 필터: 제목 `includes`(대소문자 무시) AND 카테고리 `includes`. 팀원 이름은 `getStudentsByIds(work.memberIds)`. 전체 목록은 `shared/utils/exhibition.ts`에 추가한 `getWorks()`로 가져온다(MAP 하단 목록에서도 사용 예정). 결과 0건이면 "검색 결과가 없습니다".
 
 ### 4-2. 상세
 
-- [ ] `pages/works/apis/reviews.ts`: `getReviews(artworkId, page)`, `postReview(artworkId, content)`. `encodeURIComponent(artworkId)`.
-- [ ] `pages/works/hooks/useReviews.ts`: `useQuery({ queryKey: ['reviews', workId, page], staleTime: 0 })`.
-- [ ] `pages/works/hooks/usePostReview.ts`: `useMutation`; `mutationFn`에서 `postVisitorSession()` → `postReview()`. 성공 시 `['reviews', workId]` invalidate, 1페이지로 이동. 401이면 세션 재발급 후 1회 재시도. 429·500은 메시지 표시.
-- [ ] `components/WorkHero.tsx`: 대표 이미지(`getWorkImage`), 제목 + `ic-location-24`(→ `/map?workId=`), `TeamBadge`, 한 줄 소개(줄바꿈 `\n` → `whitespace-pre-line`), `KeywordChip` 3개. 제목 옆 `↗`(공유)은 카카오 공유 보류로 제외.
-- [ ] `components/MemberChips.tsx`: 팀원 이름 + `ChevronRight` 칩, `Link to=/students/:id`.
-- [ ] `components/DescriptionTabs.tsx`: "작품 소개 / 기획 의도" 2탭(`useState`), 활성 탭 네이비 배경. 본문 `whitespace-pre-line`.
-- [ ] `components/ReviewForm.tsx`: ✨ placeholder "작품에 대한 따뜻한 감상평을 남겨주세요" + 제출 화살표(`ic-arrow-24`). controlled; `trim()` 1~1000자 아니면 제출 불가. 전송 중 disabled.
-- [ ] `components/ReviewList.tsx`: 2열 그리드 메모지. 배경은 `green-bg / yellow-bg / pink-bg / orange-bg`를 index 순환. 긴 글은 `line-clamp-6`. 빈 목록은 안내 문구.
-- [ ] `components/ReviewPagination.tsx`: 좌 `<`(1페이지면 disabled 회색) / 우 `>`(hasNext false면 disabled) 네이비 버튼.
-- [ ] `WorkDetail.tsx` 조립. `useParams` → `getWorkById`; 없으면 `NotFound` 렌더.
-- [ ] 검증: `.env`에 `VITE_API_BASE_URL` 설정 후 감상평 작성·조회·페이지 이동. 서버 없을 때 에러 메시지가 레이아웃을 깨지 않는지. `pnpm build`, `pnpm lint`.
+- [x] `pages/works/types/review.ts`: `Review`, `ReviewPagination`, `ReviewPage`, `PostedReview` (api-spec 응답 그대로).
+- [x] `pages/works/apis/reviews.ts`: `getReviews(artworkId, page)`, `postReview(artworkId, content)`. `encodeURIComponent(artworkId)`.
+- [x] `pages/works/hooks/useReviews.ts`: `useQuery({ queryKey: ['reviews', workId, page], staleTime: 0, placeholderData: keepPreviousData })`.
+- [x] `pages/works/hooks/usePostReview.ts`: `useMutation`; `mutationFn`에서 `postVisitorSession()` → `postReview()`. 성공 시 `['reviews', workId]` invalidate, 1페이지 이동·입력 비우기는 `ReviewForm`의 `mutate(..., { onSuccess })`에서 처리. 401이면 세션 재발급 후 1회 재시도. 429·500은 서버 `error.message`를 폼 아래 표시, 응답 없으면 네트워크 안내.
+- [x] `components/WorkHero.tsx`: 대표 이미지(`getWorkImage`, 3:2), 제목(`semibold-24`) + `ic-location-24`(→ `/map?workId=`) + `ic-go-link-24`(작품별 인스타그램 카드뉴스, `<a target="_blank">`), `TeamBadge`, 한 줄 소개(`whitespace-pre-line`), `KeywordChip` 3개. 카드뉴스 URL은 `pages/works/constants/instagramLinks.ts`의 `getWorkInstagramUrl(workId)`. **게시 전이라 모두 비어 있고, 비어 있으면 전공 프로필(`shared/constants/links.ts` `INSTAGRAM_PROFILE_URL`, ABOUT 바로가기와 공유)로 이동**. (사용자 요청 2026-10-05. 처음엔 ↗를 카카오 공유로 보고 제외했었음)
+- [x] `components/MemberChips.tsx`: 팀원 이름 + `ChevronRight` 칩(`navy-010` 배경), `Link to=/students/:id`.
+- [x] `components/DescriptionTabs.tsx`: "작품 소개 / 기획 의도" 2탭(`useState`), 활성 탭 네이비 배경, 높이 40px. 본문 `whitespace-pre-line`.
+- [x] `components/ReviewForm.tsx`(시안 `Comment.png`, 2026-10-05 갱신): 자동 높이 textarea(Enter 등록, Shift+Enter 줄바꿈). 4개 상태 — 기본: ✨ + placeholder + 네이비 화살표 / 포커스·미입력: ✨·placeholder 숨김 + `0/80` + 회색 화살표 / 입력 중: `n/80` + 네이비 화살표 / 80자 초과: 글자 수 `semibold-14` 검정 + 회색 화살표 + 아래 `Info` 아이콘 "최대 80자까지 작성 가능해요"(spring pop, `AnimatePresence`). 80자 초과는 입력은 되지만 제출 불가(시안의 `85/80` 상태를 보여주기 위해 hard cap 대신 제출 차단). 전송 중 disabled.
+- [x] `components/ReviewList.tsx`: 2열 그리드 메모지(`min-h` 170px). 배경은 시안 순서 `pink-bg → yellow-bg → green-bg → orange-bg`를 index 순환. 긴 글은 `line-clamp-6`. 로딩 스피너·에러·빈 목록 문구.
+- [x] `components/ReviewPagination.tsx`: 좌 `<`(1페이지면 disabled 회색) / 우 `>`(hasNext false면 disabled) 48px 네이비 버튼.
+- [x] `components/ReviewSection.tsx`: `page` 상태 + `useReviews` + Form·List·Pagination 조립. `totalPages === 0`이면 페이지네이션 숨김.
+- [x] `WorkDetail.tsx` 조립. `useParams` → `getWorkById`; 없으면 `NotFound` 렌더(`-mx-5` 래퍼).
+- [x] 애니메이션(사용자 요청 2026-10-05): `WorkDetail`의 Hero·팀원·탭·감상평 섹션을 `shared/components/Reveal`로 감싸 0.1초 간격 페이드업. `DescriptionTabs` 본문은 `AnimatePresence mode="wait"`로 이전 글이 흐려진 뒤 새 글이 0.2초 페이드업. `ReviewList` 메모지는 `motion.li` `whileInView`(once)로 0.07초 간격 stagger(아래 20px·0.92배에서 제자리로, 0.5초). 기울기는 Tailwind `rotate` 클래스(CSS rotate 속성)라 motion transform과 충돌하지 않는다. 모두 `useReducedMotion`이면 정적 렌더.
+- [x] 검증: `pnpm build`, `pnpm lint` 통과. 감상평 작성·페이지 이동은 서버 연결 상태에 따라 사용자가 `pnpm dev`로 확인 필요(아래 결정 기록 참고).
 
 ## 5. Phase 4 — EVENT (브랜치 `feat/event`)
 
@@ -215,6 +218,29 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
   - `ic-check-16.svg`, `ic-share-24.svg`, `ic-go-to-top-24.svg`(신규, 원본 `ic-go-to-top.svg`에 크기 접미사 추가) 고정색도 `currentColor`로 수정.
   - FAB은 스크롤량과 무관하게 항상 표시(공유 버튼이 함께 있어야 하므로, 사용자 결정 2026-10-04).
   - 카카오톡 공유: JS SDK 2.8.3을 `shared/utils/kakaoShare.ts`에서 첫 공유 시 동적 로드(SRI 해시 포함) 후 `Kakao.init(VITE_KAKAO_JS_KEY)`. 타입은 `@types/kakao-js-sdk`가 v1(`Kakao.Link`) 기준이라 쓰지 않고 `shared/types/kakao.d.ts`에 필요한 부분만 선언. 초대장은 카카오 메시지 템플릿(ID 137738) + `Kakao.Share.sendCustom`. 카카오 디벨로퍼스 "JavaScript SDK 도메인"에 `http://localhost:5173`·배포 도메인 등록 필요.
+- 2026-10-04 (Phase 3 구현 중 확정):
+  - 감상평 제출 아이콘은 Figma 전용 SVG `ic-input-arrow-24.svg`(2026-10-05 사용자 제공, stroke를 `currentColor`로 변환). 처음엔 lucide `ArrowDown`을 썼으나 시안 아이콘과 모양이 달라 교체했다. 색은 `ReviewForm`의 상태에 따라 `text-navy-100`/`text-subtext-900`로 제어한다.
+  - 메모지 배경 순환은 시안 기준 `pink → yellow → green → orange`(계획서의 green 시작 순서와 다름).
+  - `NotFound`는 자체 `px-5 min-h-dvh`를 가지므로 상세 레이아웃 안에서 쓸 때 `-mx-5` 래퍼로 감싸 좌우 패딩 중복을 없앤다(Footer와 같은 방식).
+  - 전체 작품 목록 getter `getWorks()`를 `shared/utils/exhibition.ts`에 추가(기존에는 ID 조회만 있었음). MAP 하단 목록도 같은 함수를 쓴다.
+  - `useReviews`에 `placeholderData: keepPreviousData`를 둬 페이지 이동 시 그리드가 비었다가 채워지는 깜빡임을 막는다. 페이지 상태·쿼리·폼·목록·페이지네이션은 `ReviewSection`이 묶어서 관리하고 `WorkDetail`은 작품 조회와 404 분기만 한다.
+  - 감상평 오류 메시지는 서버 `error.message`(한국어)를 그대로 쓰고, 응답이 없을 때만 "네트워크 연결을 확인해 주세요."를 보여준다. 별도 Toast 없이 폼 아래 한 줄(`regular-12 subtext-700`).
+  - 감상평이 0개(`totalPages === 0`)면 페이지네이션을 렌더하지 않는다.
+  - 시안 px 측정값(360px 기준): 목록 GNB 아래 28px·검색→탭 24px·탭→목록 28px / 상세 이미지 3:2·제목 24px·탭 높이 40px·메모지 최소 높이 170px·그리드 간격 16px·페이지 버튼 48px.
+  - `pages/works` 하위 `apis/components/hooks/types`의 `.gitkeep`은 실제 파일이 생겨 제거. `constants/`, `utils/`는 유지.
+- 2026-10-05 (WORKS 애니메이션 보강, 사용자 요청):
+  - 페이지 진입·복귀 슬라이드는 **View Transitions API**(`document.startViewTransition`, React Router `viewTransition`)로 처리한다. 처음에는 motion으로 `DetailLayout`을 슬라이드 아웃한 뒤 navigate하는 방식을 썼으나, 라우터가 한 번에 한 페이지만 렌더해 빠지는 동안 빈 배경만 보였다(사용자 피드백 "흰 화면이 오래 보임"). View Transition은 이전·다음 화면 스냅샷을 겹쳐 두므로 돌아올 때 목록이 바로 보인다.
+    - CSS는 `global.css`: 기본 크로스페이드를 끄고, `:root[data-nav-direction='forward']`면 새 화면이 오른쪽에서 들어오고(`::view-transition-new(root)`), `'back'`이면 이전 화면이 위에서 오른쪽으로 빠진다(`::view-transition-old(root)`, `z-index: 1`). 0.3s, iOS push 곡선, `animation-fill-mode: both`(없으면 애니메이션이 끝난 뒤 전환 레이어가 정리되기 전 한두 프레임 동안 이전 화면이 제자리로 돌아와 깜빡인다 — 사용자 리포트로 발견). `prefers-reduced-motion`이면 즉시 전환.
+    - 방향은 `RootLayout`이 `useNavigationType()`으로 `<html data-nav-direction>`에 설정한다(POP → back, 그 외 forward). 라우터가 `startViewTransition` 콜백 안에서 `flushSync` 렌더하므로 layout effect가 스냅샷 전에 실행된다.
+    - 전환을 켠 곳: `WorkListItem`·`MemberChips`·`WorkHero` 위치 링크의 `viewTransition`, `BackHeader`의 홈 이동. `navigate(-1)`과 브라우저 뒤로가기 제스처는 라우터가 들어올 때 기록한 경로 쌍으로 전환을 다시 적용하므로 별도 옵션이 없다. 공유 링크로 바로 들어온 뒤 뒤로가기는 기록이 없어 즉시 전환. GNB 탭 이동은 기존대로 즉시 전환. Firefox 144 미만 등 미지원 브라우저는 즉시 전환.
+  - 라우터 레벨 `AnimatePresence`는 쓰지 않는다. data router에서 나가는 페이지가 바뀐 location을 읽어 `NotFound`가 깜빡이고, `/works` ↔ `/works/:id`는 레이아웃이 달라 GNB 유지 설계와 충돌하기 때문.
+  - WORKS 목록은 진입 시와 검색·카테고리 변경 시 결과 목록 전체가 아래 16px에서 0.4초 페이드업, 행마다 0.05초 stagger(사용자 요청 2026-10-05). `ul`의 key를 필터 값으로 두어 필터가 바뀌면 재마운트된다. 처음에는 `AnimatePresence mode="popLayout"` + `motion.li layout`(항목별 이동 + 페이드아웃)이었으나 "스르륵 올라오는 느낌만" 남기기 위해 교체. `useReducedMotion`이면 정적 렌더.
+  - 눌림 피드백 `whileTap` 배율: `Button` 0.97(기존), `WorkListItem` 행 0.98(`motion.create(Link)`), `BackHeader` 아이콘 0.85. `FilterTabs` 글자색 전환 0.2s.
+  - Tailwind v4 Preflight가 `button` 커서를 `default`로 두므로 `global.css` base에 `button:not(:disabled), [role='button']:not(:disabled) { cursor: pointer }` 추가(사용자 요청, 전 페이지 공통).
+  - `symbol-decor.svg`(TeamBadge 팀 아이콘)의 고정색 `#1B2541`을 `currentColor`로 수정. `text-navy-075`가 적용되지 않고 navy-100으로 보이던 문제(사용자 리포트). Phase 1 아이콘 규칙과 동일.
+  - WORKS 목록 필터는 `useState`가 아닌 **URL 쿼리**(`?q=검색어&category=VR`)로 관리한다(사용자 요청: 새로고침해도 유지). 상세에서 뒤로 돌아올 때도 유지되고 링크 공유가 된다. `setSearchParams` 옵션은 `replace`(타이핑마다 히스토리 미누적)·`flushSync`(라우터가 transition으로 렌더해 controlled input이 글자를 놓치는 문제 방지)·`preventScrollReset`. 잘못된 category 값은 전체로 처리. STUDENTS 목록(Phase 6)도 같은 방식을 쓴다.
+- 2026-10-05: 백엔드 운영 서버 배포 전까지 **dev 전용 mock API**(`mocks/apiMock.ts`, Vite 미들웨어)로 감상평 UI 작업을 진행한다. `.env`에 `VITE_API_MOCK=true`, `VITE_API_BASE_URL=/api`를 두면 `pnpm dev`에서 세션·감상평 작성·조회를 명세 구조대로 응답한다(작품당 11개 시드, 메모리 저장이라 서버 재시작 시 초기화, 300ms 지연). 실제 서버 연결 시 `VITE_API_MOCK`을 비우고 `VITE_API_BASE_URL=http://localhost:4000/api`(또는 운영 주소)로 바꾸면 된다. 라이브러리(MSW 등)는 추가하지 않았다. 쿠폰 API는 Phase 4 착수 시 mock에 추가한다.
+- (확인 필요) 작품별 인스타그램 카드뉴스 게시물 URL 9개 — 게시 후 `pages/works/constants/instagramLinks.ts`에 채운다.
 - (확인 필요) PARTNER QR 토큰의 URL 파라미터명 (`qrToken` 가정).
 - (확인 필요) 스튜디오별 작품 배치, 제휴사 매장 지도 URL, 협찬사 링크 URL·소개문.
 - (확인 필요) ABOUT 임시 URL: 학과 홈페이지 `https://itmedia.duksung.ac.kr/`, Instagram `https://www.instagram.com/dswu_itmedia_26/`. `pages/about/constants/about.ts`에서 교체.
