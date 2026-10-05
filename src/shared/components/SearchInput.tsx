@@ -13,7 +13,7 @@ const SearchInput = ({ value, onChange, placeholder }: SearchInputProps) => {
   };
 
   return (
-    <label className="border-navy-100 flex items-center gap-2 border-b-[1.5px] py-3">
+    <label className="border-navy-100 flex items-center gap-2 border-b-[1.5px] py-2">
       {/* type="search"는 브라우저 기본 지우기 버튼이 생기므로 text + inputMode를 쓴다 */}
       <input
         type="text"

@@ -2,6 +2,7 @@ import { getWorkInstagramUrl } from '@/pages/works/constants/instagramLinks';
 import GoLinkIcon from '@/shared/assets/icons/ic-go-link-24.svg?react';
 import LocationIcon from '@/shared/assets/icons/ic-location-24.svg?react';
 import KeywordChip from '@/shared/components/KeywordChip';
+import SkeletonImage from '@/shared/components/SkeletonImage';
 import TeamBadge from '@/shared/components/TeamBadge';
 import type { Work } from '@/shared/types/exhibition';
 import { getTeamById } from '@/shared/utils/exhibition';
@@ -18,15 +19,12 @@ const WorkHero = ({ work }: WorkHeroProps) => {
 
   return (
     <section>
-      {imageUrl ? (
-        <img
-          src={imageUrl}
-          alt={`${work.title} 대표 이미지`}
-          className="aspect-3/2 w-full object-cover"
-        />
-      ) : (
-        <div className="bg-navy-010 aspect-3/2 w-full" />
-      )}
+      <SkeletonImage
+        src={imageUrl}
+        alt={`${work.title} 대표 이미지`}
+        loading="eager"
+        className="aspect-3/2 w-full"
+      />
       <div className="mt-9 flex items-center gap-1">
         <h1 className="text-semibold-24 text-black">{work.title}</h1>
         {/* MAP에서 해당 부스를 하이라이트할 수 있도록 작품 ID를 쿼리로 넘긴다(docs/ia.md). */}

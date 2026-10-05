@@ -175,18 +175,19 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 
 시안: `[Students] Home.png`, `[Students] 학생 상세.png`.
 
-- [ ] `pages/students/utils/chosung.ts`: 한글 첫 글자의 초성 추출(유니코드 분해). 쌍자음(ㄲ,ㄸ,ㅃ,ㅆ,ㅉ)은 기본 자음(ㄱ,ㄷ,ㅂ,ㅅ,ㅈ)으로 매핑. 필터 항목: 전체 + ㄱ ㄴ ㄷ ㄹ ㅂ ㅅ ㅇ ㅈ ㅊ ㅎ(시안 표기 순서. 시안에 ㅁ·ㅋ·ㅌ·ㅍ가 없어 보이므로 확인 후 확정).
-- [ ] `components/StudentListItem.tsx`: 프로필 이미지(정사각, `getStudentImage`, 없으면 회색) + 이름(`semibold-16 navy`) + `TeamBadge` + chevron. `Link to=/students/:id`.
-- [ ] `Students.tsx`: `SearchInput`(placeholder "학생 이름을 검색해주세요") + `FilterTabs`(초성) + 목록. 이름 `includes` AND 초성 일치.
-- [ ] `components/WorkCard.tsx`: 흰 카드(`shadow-card`) 대표 이미지 + 제목 + 한 줄 소개 + `KeywordChip`. `Link to=/works/:id`.
-- [ ] `StudentDetail.tsx`: 상단 좌 프로필 이미지 + 우 이름·`TeamBadge`·역할, 아래 참여 작품 `WorkCard`(복수면 세로 나열). 없는 ID면 `NotFound`.
-- [ ] 검증: 초성 필터·검색 조합, 상세 ↔ 작품 상세 왕복. `pnpm build`, `pnpm lint`.
+- [x] `pages/students/utils/chosung.ts`: 한글 첫 글자의 초성 추출(유니코드 분해, `getChosung`). 쌍자음(ㄲ,ㄸ,ㅃ,ㅆ,ㅉ)은 기본 자음(ㄱ,ㄷ,ㅂ,ㅅ,ㅈ)으로 매핑. 필터 항목은 상수가 아니라 `getChosungFilters(names)`가 **실제 학생 이름에 있는 초성만** 자음 순으로 만든다 → 현재 데이터로 `전체 ㄱ ㄴ ㅁ ㅂ ㅅ ㅇ ㅈ ㅊ ㅎ`(시안과 동일. 계획서의 ㄷ·ㄹ은 시안에 없고 ㅁ이 있었음).
+- [x] `components/StudentListItem.tsx`: 프로필 이미지(68×100, `getStudentImage`, 없으면 `navy-010`) + 이름(`semibold-16 navy-100`) + `TeamBadge` + `ChevronRight`. `motion.create(Link)` `whileTap` 0.98, `viewTransition`.
+- [x] `Students.tsx`: `SearchInput`(placeholder "학생 이름을 검색해주세요") + `FilterTabs`(초성) + 목록. 이름 `includes` AND 초성 일치. 필터는 WORKS와 같은 URL 쿼리(`?q=&chosung=`), 진입·필터 변경 시 행 stagger 페이드업, 0건이면 "검색 결과가 없습니다".
+- [x] `components/WorkCard.tsx`: 흰 카드(`p-5 shadow-card`) 3:2 대표 이미지 + 제목(`semibold-16`) + 한 줄 소개(`regular-14 subtext-500`) + `KeywordChip`. `Link to=/works/:id`(`viewTransition`, `whileTap` 0.98).
+- [x] `StudentDetail.tsx`: 상단 좌 프로필 이미지(152px, 2:3) + 우 이름(`semibold-24 navy-100`)·`TeamBadge`·역할(`regular-14 subtext-700`)을 **하단 정렬**(`items-end`, 시안에서 텍스트가 이미지 하단보다 12px 위에서 끝남), 아래 참여 작품 `WorkCard`(복수면 `gap-4` 세로 나열, `Reveal` 0.1초 간격). 없는 ID면 `NotFound`(`-mx-5` 래퍼).
+- [x] `shared/utils/exhibition.ts`에 전체 학생 getter `getStudents()` 추가(`getWorks()`와 동일 패턴).
+- [x] 검증: Vite SSR 렌더로 전체 36명·탭 목록·`q=김&chosung=ㄱ` 12명·잘못된 chosung은 전체·0건 문구·상세(이름/팀/역할/작품 링크/키워드 3개)·없는 ID → NotFound 확인. `pnpm build`, `pnpm lint` 통과. **브라우저 실측(애니메이션·상세 ↔ 작품 상세 왕복)은 사용자가 `pnpm dev`로 확인 필요.**
 
 ## 8. Phase 7 — 마무리
 
 - [ ] 모든 페이지 모바일(360px) 가로 스크롤 점검, `index.html` `<title>` 등 메타 정리.
 - [ ] 보류 목록 중 사용자가 진행 결정한 항목 수행(카카오 공유, 쿠폰 이미지 저장, 로띠).
-- [ ] 받은 실제 이미지(키비주얼, 404 캐릭터, 협찬사 로고·제품, 제휴사 아이콘, 파트너 캐릭터)로 placeholder 교체. 파일명 NFC 정규화·공백 제거 확인.
+- [ ] 받은 실제 이미지(키비주얼, 404 캐릭터, 협찬사 로고·제품, 제휴사 아이콘, 파트너 캐릭터)로 placeholder 교체. 파일명 NFC 정규화·공백 제거 확인. 학생·작품 사진을 교체하면 `pnpm optimize:images`를 다시 실행한다.
 
 ## 9. 결정 기록
 
@@ -239,6 +240,19 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
   - Tailwind v4 Preflight가 `button` 커서를 `default`로 두므로 `global.css` base에 `button:not(:disabled), [role='button']:not(:disabled) { cursor: pointer }` 추가(사용자 요청, 전 페이지 공통).
   - `symbol-decor.svg`(TeamBadge 팀 아이콘)의 고정색 `#1B2541`을 `currentColor`로 수정. `text-navy-075`가 적용되지 않고 navy-100으로 보이던 문제(사용자 리포트). Phase 1 아이콘 규칙과 동일.
   - WORKS 목록 필터는 `useState`가 아닌 **URL 쿼리**(`?q=검색어&category=VR`)로 관리한다(사용자 요청: 새로고침해도 유지). 상세에서 뒤로 돌아올 때도 유지되고 링크 공유가 된다. `setSearchParams` 옵션은 `replace`(타이핑마다 히스토리 미누적)·`flushSync`(라우터가 transition으로 렌더해 controlled input이 글자를 놓치는 문제 방지)·`preventScrollReset`. 잘못된 category 값은 전체로 처리. STUDENTS 목록(Phase 6)도 같은 방식을 쓴다.
+- 2026-10-05 (Phase 6 구현 중 확정):
+  - 초성 필터 항목은 데이터에서 추출한다(`getChosungFilters`). 시안의 `전체 ㄱ ㄴ ㅁ ㅂ ㅅ ㅇ ㅈ ㅊ ㅎ`가 36명 이름의 초성 집합과 정확히 일치했으므로, 고정 상수 대신 데이터 기반으로 두어 학생이 바뀌어도 수정이 필요 없게 했다. 한글이 아닌 이름(초성 없음)은 "전체"에서만 보인다.
+  - STUDENTS 목록 쿼리 키는 `q`(검색어)·`chosung`(초성). 이름 검색은 한글이라 대소문자 변환 없이 `trim`만 한다.
+  - 시안 px 측정값(360px 기준): 목록 프로필 68×100·행 `py-3`(행 간격 125px, WORKS 목록과 같은 pt-6/mt-6/mt-5 구조로 첫 행 y=268 일치) / 상세 프로필 152×227(≈2:3)·이미지→텍스트 12px·BackHeader 아래 24px·카드 위 24px·카드 패딩 20px·카드 이미지 3:2(280×187)·이미지→제목 24px·제목→소개 8px·소개→키워드 8px·키워드 간격 4px.
+  - `WorkCard`·`StudentListItem`은 STUDENTS에서만 쓰므로 `pages/students/components`에 둔다. `WorkListItem`(shared)과 레이아웃이 달라(카드형) 공통화하지 않았다.
+  - `pages/students` 하위 `components/`, `utils/`의 `.gitkeep`은 실제 파일이 생겨 제거. `apis/`, `constants/`, `hooks/`, `types/`는 유지.
+- 2026-10-05 (이미지 최적화 + 스켈레톤, 사용자 요청 "이미지 로딩이 느리다"):
+  - 원인은 원본 사진 크기였다. 학생 사진 36장 합계 약 202MB(장당 평균 5.7MB, 약 4000×5300px)를 68×100px로 표시하고 있었고, 작품 대표 이미지도 최대 8MB(6480×4320px)였다.
+  - `scripts/optimizeImages.mjs`(`pnpm optimize:images`, devDependency `sharp`)가 `students/`는 폭 456px(상세 프로필 152px × 3배 DPR), `works/`는 폭 1200px(카드·히어로 약 390px × 3배)로 줄여 WebP(q80)로 저장하고 원본을 지운다. 결과: students 476KB(장당 7~19KB, 흰 배경 스튜디오 사진이라 작음), works 384KB. 이미 `.webp`인 파일은 건너뛰므로 새 사진을 넣고 다시 실행하면 된다. `sharp().rotate()`로 EXIF 방향을 픽셀에 반영한다(없으면 휴대폰 사진이 눕는다). 원본은 git 히스토리(교체 커밋 이전)에 남는다.
+  - WebP로 통일한 이유: works PNG는 PNG로 줄여도 장당 1~2MB가 남지만 WebP는 20~100KB. Safari 14+ 지원.
+  - `exhibition.json`의 `image` 필드는 원본 파일명(`.jpeg`/`.png`)을 그대로 두고, `shared/utils/image.ts`가 **확장자를 뺀 이름**으로 매칭한다. JSON은 명세 데이터라 손대지 않기 위함. 같은 이름에 확장자만 다른 파일이 둘이면 충돌하지만 현재 없다.
+  - 스켈레톤은 라이브러리 없이 `shared/components/SkeletonImage.tsx`로 직접 구현(필요한 건 로드 전 `animate-pulse` 회색 박스뿐이라 `react-loading-skeleton` 등은 과함). 기존 5곳(`StudentListItem`·`StudentDetail`·`WorkCard`·`WorkHero`·`WorkListItem`)의 `imageUrl ? <img> : <div 회색>` 분기를 이 컴포넌트로 합쳤다. `src` 없음 → 회색 정지, 로딩 중 → `motion-safe:animate-pulse`, 로드 후 0.3초 페이드인. 캐시된 이미지는 `onLoad`가 안 올 수 있어 `img.complete`를 effect에서 확인한다. 목록은 `loading="lazy"`, 상세 히어로·프로필은 `eager`. `WorkListItem` placeholder에만 있던 `rounded-sm`은 다른 placeholder와 통일하기 위해 제거(실제 이미지에는 원래 없던 값).
+  - `partners/`의 PNG(6.8MB)는 직접 import 경로로 쓰일 수 있어 이번 범위에서 제외(보류 목록).
 - 2026-10-05: 백엔드 운영 서버 배포 전까지 **dev 전용 mock API**(`mocks/apiMock.ts`, Vite 미들웨어)로 감상평 UI 작업을 진행한다. `.env`에 `VITE_API_MOCK=true`, `VITE_API_BASE_URL=/api`를 두면 `pnpm dev`에서 세션·감상평 작성·조회를 명세 구조대로 응답한다(작품당 11개 시드, 메모리 저장이라 서버 재시작 시 초기화, 300ms 지연). 실제 서버 연결 시 `VITE_API_MOCK`을 비우고 `VITE_API_BASE_URL=http://localhost:4000/api`(또는 운영 주소)로 바꾸면 된다. 라이브러리(MSW 등)는 추가하지 않았다. 쿠폰 API는 Phase 4 착수 시 mock에 추가한다.
 - (확인 필요) 작품별 인스타그램 카드뉴스 게시물 URL 9개 — 게시 후 `pages/works/constants/instagramLinks.ts`에 채운다.
 - (확인 필요) PARTNER QR 토큰의 URL 파라미터명 (`qrToken` 가정).
@@ -254,3 +268,4 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 - 404·로딩 로띠 애니메이션(`@lottiefiles/dotlottie-react` 설치됨, 파일 미수령. ABOUT 키비주얼 로띠는 Phase 2에서 적용 완료).
 - IA에만 있고 시안·데이터에 없는 항목: STUDENTS 상세 학번·인사말·SNS·이메일, MAP 카테고리 필터, ABOUT 지하철·버스 안내.
 - `AGENTS.md`가 4페이지 기준으로 낡아 있음(EVENT 누락) — 사용자 요청 시 갱신.
+- `shared/assets/images/partners/` PNG(약 6.8MB) 리사이즈 — `optimizeImages.mjs`의 `TARGETS`에 추가하면 되지만, 직접 import 경로(확장자 포함)로 쓰는 곳이 있으면 함께 고쳐야 한다.
