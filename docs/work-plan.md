@@ -165,11 +165,11 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 시안: `[Map] Home.png`, `Studio Large ver.`, `Studio Large - Click ver.`, `Studio Small ver.`.
 
 - [x] `pages/map/types/booth.ts`: `Booth { id: 'studio-2'..'studio-6'; number; x; y; width; height; workIds }`. 배치도 좌표(viewBox 320×304, px)와 작품 연결을 한 곳에 둔다. 작품 데이터(`exhibition.json`)에는 부스 필드가 없으므로(api-spec 1장) 부스 쪽에서 `workIds`로 연결한다.
-- [x] `pages/map/constants/booths.ts`: 스튜디오 2~6 좌표(시안 1:1 측정값) + 작품 9개 **임시 배치**(6: 노른 / 5: 마음 / 4: SignBridge·Hearing / 3: V-O·SYNC:0 / 2: Blue Room·POCO·저승명부록). 실제 배치는 사용자 확인 후 `workIds`만 바꾸면 된다.
+- [x] `pages/map/constants/booths.ts`: 스튜디오 2~6 좌표(시안 1:1 측정값) + 작품 9개 배치(사용자 제공 확정본 2026-10-05: 2 = 뭉게구름·아자·여학교의 별 / 3 = 괄호·플로우 / 4 = 개구락찌·Synaction / 5 = Soundspace / 6 = 흰). 스튜디오 5·6은 `workIds`, 2·3·4는 `floorPlan.areas[].workId`가 기준.
 - [x] `components/BoothMap.tsx`: 인라인 SVG(viewBox `0 0 320 304`, 컨테이너 폭에 맞춰 스케일). 클릭되지 않는 배경(LED·대강당·포토월·협찬·제휴·리셉션·화살표·아이콘)은 Figma export `shared/assets/images/map/map-background.svg`를 `?react`로 한 번 깔고, 스튜디오 2~6만 좌표 상수로 `<rect rx=4>` + 라벨 두 줄(`<text>`)을 그린다. 기본 `navy-075`, 선택 `navy-100` + 라벨 대신 `ic-location-24` 핀(24px, 흰색). 부스 `<g>`는 focus 불가(아래 결정 기록). 선택 시 핀은 스프링 팝업, 배치도는 진입 시 0.4초 페이드인.
 - [x] `Map.tsx`: 배치도 + (스튜디오 2·3·4면) 내부 약도 + 하단 `WorkList`. 선택 상태는 **URL 쿼리 `?booth=studio-4&work=hearing`이 기준**(`useState` 없음). 부스 클릭 → `booth` 설정(같은 부스 다시 클릭 시 해제, `work` 제거) 후 하단에 그 부스의 작품 목록(작품 1개여도 바로 이동하지 않음). 약도의 자리 클릭 → `work` 설정(다시 클릭 시 해제)으로 그 작품 1개만 목록. 선택 없으면 전체 목록. WORKS 상세 위치 아이콘은 `?work=`만 넘기고 부스는 MAP이 찾는다. 잘못된 값은 선택 없음으로 처리.
 - [x] `shared/components/WorkList.tsx`: `Works.tsx`에 있던 목록 + stagger 페이드업 + 빈 결과 문구를 분리(WORKS·MAP 공용).
-- [x] 스튜디오 내부 약도(`Studio Large ver.`·`Click ver.` 시안): `components/StudioFloorPlan.tsx`(viewBox 320×160). 사용자 제공 `studio{2,3,4}.svg`에서 배경·자리 블록을 뺀 틀(입구·화살표·라벨)을 `shared/assets/images/map/studio-N.svg`로 두고, 배경은 `fill-navy-075`, 자리는 `Booth.floorPlan.areas`(rect는 `rx 4`, L자는 Figma path 그대로)로 `fill-white-075`, 선택 시 `fill-white-100` + 네이비 `MapPin`. 핀은 `components/MapPin.tsx`로 분리해 배치도(흰 핀)와 공용. 패널은 카드 아래 24px(`mt-6`), 목록은 패널 아래 40px(`mt-10`, 시안 측정값). **자리별 작품 배치는 임시**(`workIds` 순서).
+- [x] 스튜디오 내부 약도(`Studio Large ver.`·`Click ver.` 시안): `components/StudioFloorPlan.tsx`(viewBox 320×160). 사용자 제공 `studio{2,3,4}.svg`에서 배경·자리 블록을 뺀 틀(입구·화살표·라벨)을 `shared/assets/images/map/studio-N.svg`로 두고, 배경은 `fill-navy-075`, 자리는 `Booth.floorPlan.areas`(rect는 `rx 4`, L자는 Figma path 그대로)로 `fill-white-075`, 선택 시 `fill-white-100` + 네이비 `MapPin`. 핀은 `components/MapPin.tsx`로 분리해 배치도(흰 핀)와 공용. 패널은 카드 아래 24px(`mt-6`), 목록은 패널 아래 40px(`mt-10`, 시안 측정값). 자리 위치는 사용자 확인(2 = 아래 뭉게구름·왼쪽 여학교의 별·오른쪽 아자 / 3 = 왼쪽 플로우·오른쪽 괄호 / 4 = 아래 Synaction·오른쪽 개구락찌).
 - [x] 검증: 브라우저(Chrome, 375px)에서 배치도 렌더·라벨 위치, 스튜디오 4 클릭 → 핀 + 목록 2개, 스튜디오 6 클릭 → 핀 + 목록 1개 → 작품 클릭 시 상세 이동, 같은 부스 재클릭 → 전체 목록, `/map?work=hearing` 진입 → 스튜디오 4 핀 + 자리 핀 + 목록 1개, WORKS 목록 회귀 없음 확인. `pnpm build`, `pnpm lint` 통과.
 
 ## 7. Phase 6 — STUDENTS `/students`, `/students/:studentId` (브랜치 `feat/students`)
@@ -267,6 +267,7 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
   - 부스 `<g>`의 `role="button" tabIndex={0}`은 **제거**(사용자 요청 2026-10-05 "클릭하면 테두리가 생긴다"). 원인: Chrome은 SVG 요소를 `:focus-visible`이 아닌 `:focus` 기준으로 `outline: auto`를 그려서 마우스 클릭만 해도 테두리가 남고, 다른 곳을 눌러 focus가 옮겨가야 사라진다(브라우저에서 `document.activeElement` = `<g>`, `:focus-visible` false, computed outline `auto` 확인). 키보드로는 부스를 고를 수 없지만 선택 없을 때 하단 전체 목록으로 모든 작품에 도달할 수 있다. cursor는 `[role=button]` 규칙 대신 `cursor-pointer` 클래스.
   - 내부 약도 SVG는 "틀"만 쓴다(사용자 제공 studio{2,3,4}.svg에서 배경 rect·자리 블록 제거, studio2는 드롭섀도용 `translate(0 10)`을 `translate(0 -10)`으로 상쇄해 320×160으로 정규화). 블록까지 SVG에 두면 선택 상태를 바꿀 수 없고 좌표를 SVG·상수 두 곳에서 관리하게 되기 때문. L자 블록은 모서리까지 포함된 Figma path를 상수로 옮겼고, 직사각형은 `rx 4`로 그린다. 핀 위치는 직사각형 중심, L자는 모서리 정사각형 중심(Click ver. 시안의 (32,128)).
   - 진입 애니메이션: 배치도는 `motion.div` 페이드인 0.4초(목록 행과 같은 값, 위치 이동 없음). 핀은 `motion.g`로 `y 8→0 · scale 0.5→1 · opacity`, spring(stiffness 500, damping 22)으로 "위로 뿅" 나타난다. 선택될 때만 마운트되므로 다른 부스로 옮겨도 다시 재생. `useReducedMotion`이면 둘 다 즉시 표시.
+- 2026-10-05: 스튜디오별·부스별 작품 배치를 사용자 제공 확정본으로 반영(`booths.ts`). 임시 배치 표시 제거.
 - 2026-10-05 (MAP 코드 리뷰 반영):
   - MAP 선택 상태를 `useState`에서 **URL 쿼리(`?booth=`·`?work=`)**로 옮겼다. 상태로 두면 상세에서 뒤로 돌아올 때 처음 진입한 `?workId=`가 다시 읽혀 다른 부스가 선택되고, GNB로 `/map`에 다시 와도 이전 선택이 남는 문제가 있었다. `WorkHero`의 링크는 `?work=`로 바꿨다.
   - `Booth.workIds`와 `floorPlan.areas[].workId`가 같은 연결의 복사본이라, `Booth`를 `SimpleBooth(workIds)` | `FloorPlanBooth(floorPlan)` 유니언으로 나누고 `getBoothWorkIds()`로 합친다. 자리가 바뀌면 `areas`만 고치면 된다.
@@ -276,7 +277,7 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 - 2026-10-05: 백엔드 운영 서버 배포 전까지 **dev 전용 mock API**(`mocks/apiMock.ts`, Vite 미들웨어)로 감상평 UI 작업을 진행한다. `.env`에 `VITE_API_MOCK=true`, `VITE_API_BASE_URL=/api`를 두면 `pnpm dev`에서 세션·감상평 작성·조회를 명세 구조대로 응답한다(작품당 11개 시드, 메모리 저장이라 서버 재시작 시 초기화, 300ms 지연). 실제 서버 연결 시 `VITE_API_MOCK`을 비우고 `VITE_API_BASE_URL=http://localhost:4000/api`(또는 운영 주소)로 바꾸면 된다. 라이브러리(MSW 등)는 추가하지 않았다. 쿠폰 API는 Phase 4 착수 시 mock에 추가한다.
 - (확인 필요) 작품별 인스타그램 카드뉴스 게시물 URL 9개 — 게시 후 `pages/works/constants/instagramLinks.ts`에 채운다.
 - (확인 필요) PARTNER QR 토큰의 URL 파라미터명 (`qrToken` 가정).
-- (확인 필요) 스튜디오별 작품 배치와 스튜디오 2·3·4 내부 자리별 작품 배치(`pages/map/constants/booths.ts`의 `workIds`·`floorPlan.areas[].workId`), 제휴사 매장 지도 URL, 협찬사 링크 URL·소개문.
+- (확인 필요) 제휴사 매장 지도 URL, 협찬사 링크 URL·소개문.
 - (확인 필요) ABOUT 임시 URL: 학과 홈페이지 `https://itmedia.duksung.ac.kr/`, Instagram `https://www.instagram.com/dswu_itmedia_26/`. `pages/about/constants/about.ts`에서 교체.
 - (확인 필요) 네이버 지도: NCP 콘솔에서 Maps 서비스 Client ID 발급 후 `.env`에 `VITE_NAVER_MAP_CLIENT_ID` 설정, 콘솔의 Web 서비스 URL에 배포 도메인·`http://localhost:5173` 등록. 지도 좌표(37.655211, 127.048241)는 주소 검색값이므로 실제 핀 위치 확인.
 - (확인 필요) PARTNER Step2에서 첫 행 chevron / 나머지 다운로드 아이콘의 의미.
