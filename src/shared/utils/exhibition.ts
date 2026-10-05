@@ -6,6 +6,8 @@ const exhibition: Exhibition = exhibitionJson;
 
 export const getWorks = () => exhibition.works;
 
+export const getStudents = () => exhibition.students;
+
 export const getWorkById = (id: string) => exhibition.works.find((work) => work.id === id);
 
 export const getStudentById = (id: string) =>
