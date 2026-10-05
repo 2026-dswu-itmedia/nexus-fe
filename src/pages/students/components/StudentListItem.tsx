@@ -1,14 +1,12 @@
+import MotionLink from '@/shared/components/MotionLink';
 import SkeletonImage from '@/shared/components/SkeletonImage';
 import TeamBadge from '@/shared/components/TeamBadge';
 import type { Student } from '@/shared/types/exhibition';
 import { getTeamById } from '@/shared/utils/exhibition';
 import { getStudentImage } from '@/shared/utils/image';
 import { ChevronRight } from 'lucide-react';
-import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
 
 // WorkListItem과 같은 눌림 피드백(행 전체 0.98배 축소).
-const MotionLink = motion.create(Link);
 
 interface StudentListItemProps {
   student: Student;

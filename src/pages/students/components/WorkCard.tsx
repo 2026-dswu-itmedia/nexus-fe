@@ -1,11 +1,8 @@
 import KeywordChip from '@/shared/components/KeywordChip';
+import MotionLink from '@/shared/components/MotionLink';
 import SkeletonImage from '@/shared/components/SkeletonImage';
 import type { Work } from '@/shared/types/exhibition';
 import { getWorkImage } from '@/shared/utils/image';
-import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
-
-const MotionLink = motion.create(Link);
 
 interface WorkCardProps {
   work: Work;

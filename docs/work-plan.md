@@ -133,32 +133,32 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 
 ### 5-1. 데이터
 
-- [ ] `pages/event/types/event.ts`: `Sponsor { id; name; logo; link: { label; url; icon: 'instagram' | 'kakao' }; description; productTitle; productImages: string[] }`, `Partner { id; name; icon; benefit; mapUrl }`.
-- [ ] `pages/event/constants/sponsors.ts`: 인클리어("인클리어하자!!" 카카오 링크, 여성청결티슈 3매입), 이너감(`innergarm_official`, 메디 이너밸런싱젤 6p / 비건 페미닌 엔자임 파우더 워시 30p), 체리미마카. 링크 URL·소개문·이미지는 사용자에게 받음(없으면 placeholder).
-- [ ] `pages/event/constants/partners.ts`: 베리베리베이커리(전메뉴 5% 할인, 🥐), 쥬얼창동(전시술 20% 할인, ✂️), 오스시 창동씨드큐브점(회전초밥 10% 할인, 🍣). 아이콘은 `images/partners/`에 파일 수령 시 교체. 매장 지도 URL은 사용자에게 받음.
-- [ ] `pages/event/apis/coupons.ts`: `postCoupon(qrToken)`, `getMyCoupon()`. `pages/event/types/coupon.ts`에 응답 타입.
-- [ ] `pages/event/hooks/useMyCoupon.ts`: `useQuery(['coupon', 'me'])`, 404 `COUPON_NOT_FOUND`는 에러가 아닌 `null`로 정규화.
-- [ ] `pages/event/hooks/useIssueCoupon.ts`: `useMutation`(세션 발급 → `postCoupon`), 성공 시 `['coupon','me']` `setQueryData`.
+- [x] `pages/event/types/event.ts`: `Sponsor { id; name; logo; link: { label; url; icon: 'instagram' | 'kakao' }; description; productTitles: string[]; productImages: string[] }`, `Partner { id; name; icon; benefit; usageNote; mapUrl }`. 물품명은 이너감처럼 2개일 수 있어 배열, `usageNote`는 쿠폰 카드 우측 하단 문구(쥬얼창동만 "1회 사용 가능").
+- [x] `pages/event/constants/sponsors.ts`: 인클리어("인클리어하자!!" 카카오, 여성청결티슈 3매입, 이미지 2), 이너감(`innergarm_official`, 메디 이너밸런싱젤 6p / 비건 페미닌 엔자임 파우더 워시 30p, 이미지 2), 체리미마카(`cheremimaka`, 생리컵 Mini / Small / Large, 이미지 1). 소개문은 시안에서 옮겼고 로고·제품 이미지는 `images/partners/`의 기존 파일을 쓴다. **인클리어 카카오톡 채널 URL은 미확인이라 카카오톡 스토어(`store.kakao.com/inclear`)로 임시 연결.**
+- [x] `pages/event/constants/partners.ts`: 베리베리베이커리(전메뉴 5% 할인, `img-partner-1` 크루아상), 쥬얼창동(전시술 20% 할인, `img-partner-3` 가위), 오스시 창동씨드큐브점(회전초밥 10% 할인, `img-partner-2` 초밥). **매장 지도 URL은 미확인이라 네이버 지도 검색 URL(`map.naver.com/p/search/…`)로 임시 연결.**
+- [x] `pages/event/apis/coupons.ts`: `postCoupon(qrToken)`, `getMyCoupon()`. `pages/event/types/coupon.ts`에 `Coupon`, `CouponStatus`.
+- [x] `pages/event/hooks/useMyCoupon.ts`: `useQuery(['coupon', 'me'], { enabled })`, 404 `COUPON_NOT_FOUND`는 `null`로 정규화. 세션 준비·401 재시도는 `shared/apis/visitorSession.ts`에 추가한 `withVisitorSession()`이 맡는다.
+- [x] `pages/event/hooks/useIssueCoupon.ts`: `useMutation`(`withVisitorSession` → `postCoupon`), 성공 시 `['coupon','me']` `setQueryData`. 오류 코드 → 문구 매핑은 `utils/couponError.ts`.
 
 ### 5-2. 컴포넌트
 
-- [ ] `components/SectionTitle.tsx`: 큰 제목(`SPONSOR`) + 작은 부제(`협찬 물품`) + 설명 2줄, 선택적 우측 chevron(`Link`). (EVENT 홈, PARTNER 페이지)
-- [ ] `components/SponsorListItem.tsx`: 흰 카드, 좌 이름 + 중앙 로고 이미지 + 우 chevron, 살짝 기울어진 카드 스택 느낌(회전 값은 확인). `Link to=/event/sponsor/:id`.
-- [ ] `components/PartnerListItem.tsx`: 아이콘 + 이름 + chevron. `Link to=/event/partner/:id`.
-- [ ] `components/StepCard.tsx`: 번호 원(①②) + 제목. `isActive` false면 전체 흐림(`opacity`), true면 흰 카드 + `shadow-card` + 회전.
-- [ ] `components/CouponRow.tsx`: 아이콘 + 매장명 + 혜택 + 우측 액션(인증 전: 회색 다운로드 아이콘 disabled / 인증 후: chevron → 상세). ※ Step2 시안에서 첫 행만 chevron이고 나머지는 다운로드 아이콘이다. 의미를 사용자에게 확인 후 확정.
-- [ ] `components/Toast.tsx`: 하단 고정 네이비 바 "✓ QR 인증이 완료되었습니다", 3초 후 사라짐. (PARTNER 전용)
-- [ ] `components/CouponCard.tsx`: 흰 카드, 아이콘 + 매장명 + 혜택(`semibold-24`), 점선 구분(양옆 반원 notch는 네이비 원 absolute), 유효기간 `~ YYYY/MM/DD`(`expiresAt` 포맷) + "1일 1회 사용 가능".
+- [x] `components/SectionTitle.tsx`: 큰 제목(`semibold-24`) + 부제(`regular-14 subtext-700`, baseline 정렬) + 설명(`regular-14 subtext-500`, 12px 아래). `to`가 있으면 제목 행 전체가 `Link`가 되고 우측에 `ChevronRight`(subtext-900).
+- [x] `components/SponsorListItem.tsx`: 흰 카드(`px-4 py-5 shadow-card`, 64px), 좌 이름(`regular-14 subtext-500`) + 남는 공간 가운데 로고 + 우 chevron(subtext-700). 기울기·겹침은 `utils/cardStack.ts`의 `getStackedCardClass(index)`(+2° / −2° / +2°, 앞 카드가 위에 오도록 z-30/20/10)를 `li`에 적용. EVENT 홈과 `/event/sponsor`가 공유하는 제목+목록은 `components/SponsorSection.tsx`.
+- [x] `components/PartnerListItem.tsx`: 아이콘(32px) + 이름 + chevron, `px-4 py-4`(64px). `Link to=/event/partner/:id`.
+- [x] `components/StepCard.tsx`: 번호 원(24px 네이비) + 제목(`semibold-14`), `px-4 py-5`. 활성 = 흰 카드 + `shadow-card` + `-rotate-2`, 비활성 = `opacity-25`·회전 없음(시안 측정값). 전환은 `transition-[rotate,opacity] 0.3s`.
+- [x] `components/CouponRow.tsx`: 아이콘(32) + 매장명(`semibold-16`) + 혜택(`regular-14 subtext-500`) + chevron, `py-4`. 인증 전에는 누를 수 없는 행(비활성 카드가 25%로 흐려짐), 인증 후에는 같은 모양의 `Link` → 상세. 시안의 다운로드 아이콘은 사용자 결정(2026-10-06)으로 쓰지 않고 전 행 chevron으로 통일.
+- [x] `components/Toast.tsx`: 하단 고정(`bottom-5`, `max-w-mobile px-5`) `navy-075` `rounded-lg` 44px 바. `type: 'success'(ic-check-16) | 'error'(lucide Info)`. 자체 타이머로 3초 뒤 사라지고(`AnimatePresence`), 메시지가 바뀌면 부모가 `key`로 다시 마운트한다.
+- [x] `components/CouponCard.tsx`: 흰 카드 `p-5`, 아이콘 56px → 매장명(`regular-14 subtext-700`) → 혜택(`semibold-24 navy`) → 32px 아래 2px 점선(배경 그라데이션 4px/4px, `-mx-5`로 카드 가장자리까지 긋고 양끝 notch 20px 네이비 원 `-left/right-2.5`가 덮어 원에서 원까지 이어짐 — 사용자 요청 2026-10-06) → 24px 아래 "유효기간 ~ YYYY/MM/DD"(`regular-12 subtext-900` + `semibold-14 subtext-500`) / `usageNote`. `EXPIRED`면 우측을 "기간 만료"로.
 
 ### 5-3. 페이지
 
-- [ ] `Event.tsx`: SPONSOR 섹션(목록 3) + PARTNER 섹션(제목 chevron → `/event/partner`, 목록 3).
-- [ ] `Sponsor.tsx`(`/event/sponsor`): `SectionTitle` + `SponsorListItem` 목록.
-- [ ] `SponsorDetail.tsx`(신규): 네이비 배경(`DetailLayout` dark). "OFFICIAL SPONSOR" → "{name}이 NEX:US와 함께합니다" → `LinkRow`(회색 반투명) → 인용 소개문 → "PRODUCT DETAIL" → 제품명 → 제품 이미지 세로 나열.
-- [ ] `Partner.tsx`: 진입 시 URL `?qrToken=` 읽기(파라미터명은 백엔드와 확인). 토큰 있으면 `useIssueCoupon` 실행 → 성공 시 Toast + Step2 활성 + URL에서 토큰 제거(`setSearchParams`). 토큰 없으면 `useMyCoupon`으로 발급 여부 판단: 로딩이면 Step2 카드 안 스피너(`Loading.png`), 쿠폰 없으면 Step1 활성, 있으면 Step2 활성. 발급 에러(`INVALID_QR_TOKEN`, `COUPON_ISSUANCE_CLOSED`, `QR_TOKEN_INACTIVE`, `RATE_LIMIT_EXCEEDED`)는 코드별 한국어 메시지를 Toast로 표시.
-- [ ] `PartnerDetail.tsx`(신규): 네이비 배경, `BackHeader` title = 매장명. "OFFICIAL PARTNER" → 헤드라인 → `LinkRow`(`ic-location-24` "매장 위치 확인하기", `<a>` 외부) → 캐릭터 그래픽(파일 수령 전 placeholder) → 안내 2줄 → `CouponCard`(`useMyCoupon`의 `expiresAt`·`status`, `EXPIRED`면 만료 표시) → 주의 문구. 쿠폰 없으면 `/event/partner`로 `Navigate`. 하단 "쿠폰을 이미지로 저장하기" 버튼은 이미지 저장 보류로 제외.
-- [ ] 라우터에 `SponsorDetail`, `PartnerDetail` lazy 등록(Phase 1에서 라우트만 선언, 여기서 실제 컴포넌트 연결).
-- [ ] 검증: `/event/partner?qrToken=...`로 진입 시 발급 흐름, 재진입 시 Step2 유지, 쿠폰 없이 상세 진입 시 리다이렉트. `pnpm build`, `pnpm lint`.
+- [x] `Event.tsx`: `pt-10 gap-18 pb-10`. `SponsorSection` + PARTNER 섹션(`SectionTitle to=/event/partner` + 목록 3, `mt-12`). 카드는 `Reveal` 0.1초 stagger.
+- [x] `Sponsor.tsx`(`/event/sponsor`): `pt-10 pb-10` + `SponsorSection`.
+- [x] `SponsorDetail.tsx`: 네이비 배경. `BackHeader` title=이름 → `pt-5` "OFFICIAL SPONSOR"(`regular-12 white-075`) → `mt-3` "{name}{이/가} NEX:US와 함께합니다"(`semibold-20`, 조사는 `utils/particle.ts`) → `mt-6` `LinkRow dark`(`logo-kakao-24`/`logo-instagram-24`) → `mt-6` 인용 소개문(`regular-14 white-075`) → `mt-10` "PRODUCT DETAIL" → `mt-3` 물품명(`semibold-20`, 여러 개면 `gap-1`) → `mt-6` 정사각 이미지(`bg-white-050`, `gap-5`, lazy) → `pb-5`. 없는 ID면 `NotFound`(`-mx-5`).
+- [x] `Partner.tsx`: `BackHeader` → `pt-6` `SectionTitle` → `mt-10` Step 카드 2개(`gap-2`). `?qrToken=`이 있으면 effect(ref 가드)에서 `useIssueCoupon` 실행 → 성공 토스트 / 코드별 오류 토스트, `onSettled`에서 토큰을 URL에서 제거(`replace`). 토큰이 있는 동안 `useMyCoupon`은 `enabled=false`(성공 시 `setQueryData` 결과가 fresh라 재요청 없음, 실패 시 기존 발급 여부 조회). 발급·조회 중 = Step2 활성 + 카드 안 스피너(`min-h-56.5`로 3행 높이 유지), 쿠폰 있음 = Step2(행 chevron), 없음 = Step1. 조회 실패도 토스트로 알린다. 진입 애니메이션(사용자 요청 2026-10-06): 제목·1단계·2단계 카드를 `Reveal` 0.1초 간격으로, 2단계 안의 매장 행은 조회가 끝난 뒤 `WorkList`와 같은 `motion.li` stagger(`FADE_TRANSITION`·`ROW_STAGGER`)로 올라온다.
+- [x] `PartnerDetail.tsx`: 네이비 배경 + 캐릭터 뒤 radial glow(흰색 16%, 중심 위에서 330px, 반지름 약 230px — 시안 측정값, `-mx-5 px-5` 래퍼의 `bg-[radial-gradient(...)]`). `BackHeader` title=매장명 → 라벨/헤드라인 → `mt-6` `LinkRow dark`(`ic-location-24` "매장 위치 확인하기") → `mt-10` `img-event-graphic.svg`(168×131) → `mt-10` 안내 2줄(`semibold-14`) → `mt-4` `CouponCard` → `mt-4` 주의 문구(`regular-12 white-075`) → `mt-auto pt-10` "쿠폰을 이미지로 저장하기"(`Button outline` + `ic-download-16`, 쿠폰 있을 때만) → `pb-5`. `useMyCoupon` 로딩이면 `PageFallback`. **쿠폰이 없으면(미발급·조회 실패) 리다이렉트하지 않고 카드를 잠근다**(시안 `Brand=베리베리베이커리, Status=Disabled.png`): 아이콘·매장명·혜택·유효기간 행만 `blur-coupon`, 점선·notch는 선명, 카드 정중앙에 160×44 네이비 "QR 스캔하러 가기 >" `Link` → `/event/partner`. 저장 버튼은 사용자 제공 매장별 쿠폰 이미지(`images/partners/img-coupon-<partnerId>.png`, 720×1160)를 `utils/saveCouponImage.ts`로 내려받는다(파일 공유 가능하면 공유 시트, 아니면 `<a download>`).
+- [x] 라우터: Phase 1에서 `routes/pages.ts`에 lazy 등록되어 있어 변경 없음.
+- [x] 검증: `pnpm build`, `pnpm lint`, prettier 통과. Chrome(375px, dev mock)에서 EVENT 홈 카드 스택·PARTNER Step1 → `?qrToken=mock-qr-token` 진입 시 스피너 → 201 발급 → Step2 + 성공 토스트 + URL 토큰 제거 → 상세 쿠폰 카드(유효기간 2026/11/06) → 잘못된 토큰 재진입 시 "유효하지 않은 QR 코드예요" 토스트 + 기존 쿠폰으로 Step2 유지 → 협찬사 상세 3종 → 없는 ID 404 확인. (자동화 탭이 `document.hidden` 상태라 `Reveal` 애니메이션이 스크롤 전까지 멈춰 보였을 뿐 DOM·스타일은 정상.) **쿠폰 없이 상세 진입 리다이렉트와 실서버 연동은 사용자 확인 필요.**
 
 ## 6. Phase 5 — MAP `/map` (브랜치 `feat/map`)
 
@@ -187,8 +187,8 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 ## 8. Phase 7 — 마무리
 
 - [ ] 모든 페이지 모바일(360px) 가로 스크롤 점검, `index.html` `<title>` 등 메타 정리.
-- [ ] 보류 목록 중 사용자가 진행 결정한 항목 수행(카카오 공유, 쿠폰 이미지 저장, 로띠).
-- [ ] 받은 실제 이미지(키비주얼, 404 캐릭터, 협찬사 로고·제품, 제휴사 아이콘, 파트너 캐릭터)로 placeholder 교체. 파일명 NFC 정규화·공백 제거 확인. 학생·작품 사진을 교체하면 `pnpm optimize:images`를 다시 실행한다.
+- [ ] 보류 목록 중 사용자가 진행 결정한 항목 수행(카카오 공유, 로띠). (쿠폰 이미지 저장은 Phase 4에서 정적 이미지 다운로드로 완료.)
+- [ ] 받은 실제 이미지(키비주얼, 404 캐릭터, 협찬사 로고·제품, 제휴사 아이콘, 파트너 캐릭터)로 placeholder 교체. 매장별 쿠폰 이미지 3장은 2026-10-05 반영 완료(`images/partners/img-coupon-*.png`). 파일명 NFC 정규화·공백 제거 확인. 학생·작품 사진을 교체하면 `pnpm optimize:images`를 다시 실행한다.
 
 ## 9. 결정 기록
 
@@ -276,17 +276,43 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
   - 배치도·약도 `<svg>`에 `role="group"`, 부스·자리 `<g>`에 `<title>`을 넣어 스크린리더가 이름을 읽게 했다(focus 불가 결정은 유지).
   - Figma export SVG 위치 규칙을 "아이콘은 `icons/`, 배경·일러스트는 `images/<영역>/`"으로 `CLAUDE.md`·`docs/convention.md`에 명시했다(`images/graphic`, `images/partners` 선례와 `images/map` 기준).
 - 2026-10-05: 백엔드 운영 서버 배포 전까지 **dev 전용 mock API**(`mocks/apiMock.ts`, Vite 미들웨어)로 감상평 UI 작업을 진행한다. `.env`에 `VITE_API_MOCK=true`, `VITE_API_BASE_URL=/api`를 두면 `pnpm dev`에서 세션·감상평 작성·조회를 명세 구조대로 응답한다(작품당 11개 시드, 메모리 저장이라 서버 재시작 시 초기화, 300ms 지연). 실제 서버 연결 시 `VITE_API_MOCK`을 비우고 `VITE_API_BASE_URL=http://localhost:4000/api`(또는 운영 주소)로 바꾸면 된다. 라이브러리(MSW 등)는 추가하지 않았다. 쿠폰 API는 Phase 4 착수 시 mock에 추가한다.
+- 2026-10-05 (Phase 4 구현 중 확정):
+  - 시안 px 측정값(360px 기준): EVENT 홈 GNB 아래 40px, 제목→설명 12px, 설명→카드 48px(PARTNER 페이지는 40px), 섹션 간격 72px, 카드 64px(협찬 `py-5`+chevron 24 / 제휴 `py-4`+아이콘 32), 카드 간격 4px, 카드 기울기 +2°/−2°/+2°에 앞 카드가 위(모서리가 겹치고 그림자가 아래 카드에 떨어짐). Step 카드 활성 −2°, 비활성은 회전 없이 25% 투명(원·글자 색 측정값 `#c6c7ca` = 네이비 25%), 카드 간격 8px, 쿠폰 행 피치 76px. 토스트 `navy-075`·높이 44·라운드 8·바닥 20px. 상세 라벨 `regular-12 white-075`, 헤드라인 `semibold-20`, 제품 이미지 320×320 `white-050` 배경·간격 20. 쿠폰 카드 232px(`p-5`, 아이콘 56, 점선 2px 4/4 간격, notch 지름 20, 유효기간 행 24px 아래).
+  - 협찬 카드는 시안에서 사다리꼴처럼 보이지만 ±2° 회전 사각형이 겹친 것으로 측정됐다(위·아래 변이 평행). ABOUT 위원회 행과 같은 Tailwind `rotate` 클래스 + `li` z-index로 구현하고, `Reveal`의 transform과는 충돌하지 않는다.
+  - 로고·제휴사 아이콘·캐릭터(`img-event-graphic.svg`)는 PNG가 내장된 Figma export SVG(각 300KB대)라 `?react`로 JS 번들에 넣지 않고 `NotFound`의 404 그래픽처럼 URL import + `<img>`로 쓴다. 제품 PNG도 같은 방식(lazy). `images/partners/` PNG 4장 합계 약 5MB 리사이즈는 보류 목록 그대로(상세 진입 시 체감되면 `optimizeImages.mjs` `TARGETS`에 `partners` 추가 + import 확장자 `.webp`로 변경).
+  - 세션 준비 + 401 재시도 로직을 `shared/apis/visitorSession.ts`의 `withVisitorSession(request)`로 두고 쿠폰 훅 2개가 쓴다. `usePostReview`의 같은 로직은 범위 밖이라 손대지 않았다(후속 정리 후보).
+  - `useMyCoupon(enabled)`은 PARTNER 페이지와 제휴사 상세가 같은 캐시(`['coupon','me']`)를 본다. 공용 `staleTime` 5분이라 발급 직후 상세로 가도 재요청하지 않는다. 쿠폰 조회 실패(네트워크·500)는 Step1로 두고 토스트로 알린다.
+  - 토스트는 부모가 `setState`를 effect 안에서 부르지 않도록(react-hooks v7 `set-state-in-effect`) 자체 타이머로 사라지고, 발급 결과 토스트는 mutation 콜백에서, 조회 실패 토스트는 파생값으로 만든다.
+  - QR 토큰 발급은 `useEffect` + `useRef` 가드(StrictMode 이중 실행 방지). 토큰은 `onSettled`에서 URL에서 지워 새로고침 시 재발급 요청을 막는다. 파라미터명 `qrToken`은 가정값.
+  - 인클리어 링크는 카카오톡 채널 URL 미확인으로 카카오톡 스토어, 제휴사 지도는 네이버 지도 검색 URL로 임시 연결(상수 한 곳만 바꾸면 됨).
+  - 헤드라인 조사(이/가)는 `utils/particle.ts`의 `getSubjectParticle()`로 마지막 글자 받침으로 고른다(협찬·제휴 상세 공용).
+  - `ic-download-16.svg` 고정색을 `currentColor`로 수정(Phase 1 아이콘 규칙).
+  - mock(`mocks/apiMock.ts`)에 쿠폰 API 추가: `POST /api/coupons`(`mock-qr-token` 발급, `mock-qr-token-inactive` 410, `mock-qr-token-closed` 409, 그 외 403, 세션 없으면 401), `GET /api/coupons/me`(미발급 404). 발급 기록은 메모리 1건(서버 재시작 시 초기화), 만료일 2026-11-06 14:00 KST. 확인 URL: `/event/partner?qrToken=mock-qr-token`. **이미 떠 있는 dev 서버는 mock 변경을 반영하지 못하므로 `pnpm dev`를 다시 띄워야 한다.**
+  - `pages/event` 하위 6개 폴더의 `.gitkeep`은 실제 파일이 생겨 제거.
+- 2026-10-05 (PARTNER 흐름 확정, 사용자 설명):
+  - EVENT 홈 매장 카드 `>` → 바로 제휴사 상세. QR 미인증이면 상세의 쿠폰 카드가 잠긴 상태(블러 + "QR 스캔하러 가기")로 보이고, 버튼은 **Step 안내 페이지(`/event/partner`)로 이동**한다. 웹에서 휴대폰 기본 카메라 앱을 직접 열 수 없고, 웹 카메라 스캐너는 라이브러리·권한·HTTPS·iOS 제약이 있으며, 현장 QR 자체가 사이트 URL을 담고 있어 카메라 앱으로 찍으면 되기 때문(사용자 결정).
+  - Disabled 카드 시안 측정값(320×232): 블러는 y 22–148(아이콘·이름·혜택)과 185–218(유효기간 행), 점선(169–170)·notch는 선명. 버튼 160×44, 카드 정중앙(중심 y 116), `semibold-14` 흰 글자 + 16px chevron. 테마 토큰 `blur-coupon`(Figma Layer blur 20 = 10px)이 바로 이 용도.
+  - "쿠폰을 이미지로 저장하기"는 DOM 캡처(html-to-image) 대신 **사용자가 제공한 매장별 쿠폰 이미지 3장**(720×1160 PNG, 각 약 270KB)을 내려받는다. 파일명은 매장 id와 맞춘 `img-coupon-<partnerId>.png`, `Partner.couponImage`로 연결. 이미지 안에 유효기간(2026/11/06)이 고정되어 있으므로 기간이 바뀌면 이미지도 교체해야 한다.
+  - 저장 동작: `navigator.canShare({ files })`가 되는 모바일은 공유 시트(iOS "이미지 저장"), 그 외는 `<a download>`. iOS Safari가 download 속성을 무시하고 새 탭에 여는 문제를 피하기 위함. 공유 시트 취소(`AbortError`)는 무시.
+- 2026-10-06 (Phase 4 코드 리뷰 반영):
+  - 제휴사 상세의 쿠폰 조회 실패(네트워크·429·500)를 "미발급"으로 보여주지 않는다. 조회 중에는 카드 자리에 스피너, 실패하면 오류 문구 + "다시 시도"(`refetch`)를 같은 크기 흰 틀에 보여주고 `BackHeader`는 항상 남긴다. 미인증 잠금 카드의 "QR 스캔하러 가기"와 같은 160×44 버튼은 `components/CouponActionButton.tsx`(Link/button 겸용)로 공유.
+  - QR 토큰은 발급 성공이거나 재시도해도 소용없는 오류(`INVALID_QR_TOKEN`·`QR_TOKEN_INACTIVE`·`COUPON_ISSUANCE_CLOSED`·`VALIDATION_ERROR`, `utils/couponError.ts` `isUnrecoverableCouponError`)일 때만 URL에서 지운다. 타임아웃·429·500이면 토큰을 남겨 새로고침으로 재시도할 수 있다. 토큰이 빠지면 `issuedTokenRef`도 비우고, 토스트는 `id`(`Date.now()`)를 key로 써 같은 문구도 다시 뜬다.
+  - QR 진입 첫 렌더에 Step1이 잠깐 활성으로 그려지던 깜빡임 제거: 토큰이 있고 mutation이 `idle`인 동안도 스피너로 본다. 발급 실패 시에는 `useMyCoupon`을 켜(`enabled: !qrToken || issueStatus === 'error'`) 기존 발급 여부로 Step을 정한다.
+  - iOS 공유 시트는 사용자 제스처 직후에만 열리므로, 쿠폰 이미지는 `hooks/useCouponImageFile.ts`(`useQuery`, `staleTime: Infinity`)로 저장 버튼이 보일 때 미리 File로 받아 두고 탭 시점에 바로 `navigator.share`에 넘긴다. 아직 못 받았으면 앵커 다운로드.
+  - API 오류 본문 접근(`error.response.data.error.code`)에 옵셔널 체이닝을 넣어 프록시의 HTML 404 등에서 TypeError가 나지 않게 했다(`useMyCoupon`, `couponError`).
+  - `usePostReview`도 `withVisitorSession`을 쓰도록 치환(중복 제거). `motion.create(Link)`는 `shared/components/MotionLink.tsx` 하나로 모아 7개 파일에서 import. Reveal 간격 `0.1`은 `shared/constants/motion.ts`의 `REVEAL_STAGGER`로 통일(EVENT 쪽 5개 파일. ABOUT의 지역 상수는 범위 밖이라 그대로).
+  - 래스터 내장 SVG·사진을 `<img>`로 쓰는 예외를 `docs/convention.md` 아이콘 절에 명시했다.
+  - 리뷰 지적 중 유지한 것: `withVisitorSession`의 선행 세션 POST(명세 "쿠폰 API 호출 전에 세션 발급 API를 먼저 호출" 준수), `/event/sponsor`에 진입 링크 없음(시안대로 유지, 사용자 결정 2026-10-06).
 - (확인 필요) 작품별 인스타그램 카드뉴스 게시물 URL 9개 — 게시 후 `pages/works/constants/instagramLinks.ts`에 채운다.
 - (확인 필요) PARTNER QR 토큰의 URL 파라미터명 (`qrToken` 가정).
-- (확인 필요) 제휴사 매장 지도 URL, 협찬사 링크 URL·소개문.
+- (확인 필요) 제휴사 매장 지도 URL(현재 네이버 지도 검색 URL, `pages/event/constants/partners.ts`), 인클리어 카카오톡 채널 URL(현재 카카오톡 스토어, `pages/event/constants/sponsors.ts`). 소개문은 시안 문구를 그대로 썼다.
 - (확인 필요) ABOUT 임시 URL: 학과 홈페이지 `https://itmedia.duksung.ac.kr/`, Instagram `https://www.instagram.com/dswu_itmedia_26/`. `pages/about/constants/about.ts`에서 교체.
 - (확인 필요) 네이버 지도: NCP 콘솔에서 Maps 서비스 Client ID 발급 후 `.env`에 `VITE_NAVER_MAP_CLIENT_ID` 설정, 콘솔의 Web 서비스 URL에 배포 도메인·`http://localhost:5173` 등록. 지도 좌표(37.655211, 127.048241)는 주소 검색값이므로 실제 핀 위치 확인.
-- (확인 필요) PARTNER Step2에서 첫 행 chevron / 나머지 다운로드 아이콘의 의미.
+- ~~(확인 필요) PARTNER Step2에서 첫 행 chevron / 나머지 다운로드 아이콘의 의미.~~ 2026-10-06 사용자 결정: 인증 전후 모두 chevron, 다운로드 아이콘은 쓰지 않는다.
 
 ## 10. 보류 목록 (이번 범위 제외)
 
 - 카카오톡 공유 중 WORKS 상세의 작품별 공유(`Kakao.Share.sendDefault` 또는 별도 템플릿). ABOUT 초대장 공유는 Phase 2에서 완료했고 SDK 로더(`shared/utils/kakaoShare.ts`)를 재사용한다.
-- 제휴사 상세 "쿠폰을 이미지로 저장하기" — `html-to-image` 등 라이브러리 추가 필요.
 - 404·로딩 로띠 애니메이션(`@lottiefiles/dotlottie-react` 설치됨, 파일 미수령. ABOUT 키비주얼 로띠는 Phase 2에서 적용 완료).
 - IA에만 있고 시안·데이터에 없는 항목: STUDENTS 상세 학번·인사말·SNS·이메일, ABOUT 지하철·버스 안내. (MAP 카테고리 필터는 2026-10-05 IA에서 제거.)
 - `AGENTS.md`가 4페이지 기준으로 낡아 있음(EVENT 누락) — 사용자 요청 시 갱신.
