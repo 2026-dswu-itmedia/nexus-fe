@@ -152,6 +152,85 @@ const handlePostReview = async (req: IncomingMessage, res: ServerResponse, artwo
   sendJson(res, 201, { data: review });
 };
 
+// ----- 쿠폰 (PARTNER 페이지) -----
+// 유효한 QR 토큰은 'mock-qr-token' 하나다. 아래 두 값은 오류 응답을 확인하기 위한 것이고, 그 밖의 값은 403.
+//   /event/partner?qrToken=mock-qr-token          → 발급(201) / 재요청 시 기존 쿠폰(200)
+//   /event/partner?qrToken=mock-qr-token-inactive → 410 QR_TOKEN_INACTIVE
+//   /event/partner?qrToken=mock-qr-token-closed   → 409 COUPON_ISSUANCE_CLOSED (아직 발급 전일 때)
+const VALID_QR_TOKEN = 'mock-qr-token';
+const INACTIVE_QR_TOKEN = 'mock-qr-token-inactive';
+const CLOSED_QR_TOKEN = 'mock-qr-token-closed';
+// 전시 마지막 날(2026-11-06 금 14:00 KST) 만료
+const COUPON_EXPIRES_AT = '2026-11-06T05:00:00.000Z';
+
+interface MockCoupon {
+  id: string;
+  name: string;
+  benefitDescription: string;
+  issuedAt: string;
+  expiresAt: string;
+}
+
+// 세션 쿠키 값이 하나뿐이라 방문자도 한 명으로 본다. 서버 재시작 시 초기화된다.
+let issuedCoupon: MockCoupon | null = null;
+
+const toCouponResponse = (coupon: MockCoupon) => ({
+  ...coupon,
+  status: Date.now() >= Date.parse(coupon.expiresAt) ? 'EXPIRED' : 'ISSUED',
+});
+
+const handlePostCoupon = async (req: IncomingMessage, res: ServerResponse) => {
+  if (!hasSession(req)) {
+    return sendError(res, 401, 'INVALID_VISITOR_SESSION', '방문자 세션이 유효하지 않습니다.');
+  }
+
+  let qrToken: unknown;
+  try {
+    qrToken = (JSON.parse(await readBody(req)) as { qrToken?: unknown }).qrToken;
+  } catch {
+    qrToken = undefined;
+  }
+
+  if (typeof qrToken !== 'string' || qrToken.length === 0) {
+    return sendError(res, 400, 'VALIDATION_ERROR', '입력값을 확인해 주세요.', [
+      { field: 'qrToken', message: 'qrToken은 비어 있지 않은 문자열이어야 합니다.' },
+    ]);
+  }
+  if (qrToken === INACTIVE_QR_TOKEN) {
+    return sendError(res, 410, 'QR_TOKEN_INACTIVE', 'QR 토큰이 만료되었거나 비활성화되었습니다.');
+  }
+  if (qrToken !== VALID_QR_TOKEN && qrToken !== CLOSED_QR_TOKEN) {
+    return sendError(res, 403, 'INVALID_QR_TOKEN', 'QR 토큰이 유효하지 않습니다.');
+  }
+
+  // 서버 처리 순서대로 기존 발급 기록이 있으면 발급 기간과 무관하게 반환한다.
+  if (issuedCoupon) {
+    return sendJson(res, 200, { data: toCouponResponse(issuedCoupon) });
+  }
+  if (qrToken === CLOSED_QR_TOKEN) {
+    return sendError(res, 409, 'COUPON_ISSUANCE_CLOSED', '쿠폰 발급 기간이 아닙니다.');
+  }
+
+  issuedCoupon = {
+    id: crypto.randomUUID(),
+    name: '졸업전시 방문 기념 쿠폰',
+    benefitDescription: '제휴 매장 할인',
+    issuedAt: new Date().toISOString(),
+    expiresAt: COUPON_EXPIRES_AT,
+  };
+  sendJson(res, 201, { data: toCouponResponse(issuedCoupon) });
+};
+
+const handleGetMyCoupon = (req: IncomingMessage, res: ServerResponse) => {
+  if (!hasSession(req)) {
+    return sendError(res, 401, 'INVALID_VISITOR_SESSION', '방문자 세션이 유효하지 않습니다.');
+  }
+  if (!issuedCoupon) {
+    return sendError(res, 404, 'COUPON_NOT_FOUND', '발급받은 쿠폰이 없습니다.');
+  }
+  sendJson(res, 200, { data: toCouponResponse(issuedCoupon) });
+};
+
 const REVIEWS_PATH = /^\/api\/artworks\/([^/]+)\/reviews$/;
 
 export const mockApiPlugin = (): Plugin => ({
@@ -171,6 +250,13 @@ export const mockApiPlugin = (): Plugin => ({
         const artworkId = decodeURIComponent(reviewsMatch[1]);
         if (method === 'GET') return handleGetReviews(res, artworkId, url.searchParams);
         if (method === 'POST') return void handlePostReview(req, res, artworkId);
+      }
+
+      if (url.pathname === '/api/coupons' && method === 'POST') {
+        return void handlePostCoupon(req, res);
+      }
+      if (url.pathname === '/api/coupons/me' && method === 'GET') {
+        return handleGetMyCoupon(req, res);
       }
 
       if (url.pathname.startsWith('/api/')) {
