@@ -294,6 +294,15 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
   - Disabled 카드 시안 측정값(320×232): 블러는 y 22–148(아이콘·이름·혜택)과 185–218(유효기간 행), 점선(169–170)·notch는 선명. 버튼 160×44, 카드 정중앙(중심 y 116), `semibold-14` 흰 글자 + 16px chevron. 테마 토큰 `blur-coupon`(Figma Layer blur 20 = 10px)이 바로 이 용도.
   - "쿠폰을 이미지로 저장하기"는 DOM 캡처(html-to-image) 대신 **사용자가 제공한 매장별 쿠폰 이미지 3장**(720×1160 PNG, 각 약 270KB)을 내려받는다. 파일명은 매장 id와 맞춘 `img-coupon-<partnerId>.png`, `Partner.couponImage`로 연결. 이미지 안에 유효기간(2026/11/06)이 고정되어 있으므로 기간이 바뀌면 이미지도 교체해야 한다.
   - 저장 동작: `navigator.canShare({ files })`가 되는 모바일은 공유 시트(iOS "이미지 저장"), 그 외는 `<a download>`. iOS Safari가 download 속성을 무시하고 새 탭에 여는 문제를 피하기 위함. 공유 시트 취소(`AbortError`)는 무시.
+- 2026-10-06 (Phase 4 코드 리뷰 반영):
+  - 제휴사 상세의 쿠폰 조회 실패(네트워크·429·500)를 "미발급"으로 보여주지 않는다. 조회 중에는 카드 자리에 스피너, 실패하면 오류 문구 + "다시 시도"(`refetch`)를 같은 크기 흰 틀에 보여주고 `BackHeader`는 항상 남긴다. 미인증 잠금 카드의 "QR 스캔하러 가기"와 같은 160×44 버튼은 `components/CouponActionButton.tsx`(Link/button 겸용)로 공유.
+  - QR 토큰은 발급 성공이거나 재시도해도 소용없는 오류(`INVALID_QR_TOKEN`·`QR_TOKEN_INACTIVE`·`COUPON_ISSUANCE_CLOSED`·`VALIDATION_ERROR`, `utils/couponError.ts` `isUnrecoverableCouponError`)일 때만 URL에서 지운다. 타임아웃·429·500이면 토큰을 남겨 새로고침으로 재시도할 수 있다. 토큰이 빠지면 `issuedTokenRef`도 비우고, 토스트는 `id`(`Date.now()`)를 key로 써 같은 문구도 다시 뜬다.
+  - QR 진입 첫 렌더에 Step1이 잠깐 활성으로 그려지던 깜빡임 제거: 토큰이 있고 mutation이 `idle`인 동안도 스피너로 본다. 발급 실패 시에는 `useMyCoupon`을 켜(`enabled: !qrToken || issueStatus === 'error'`) 기존 발급 여부로 Step을 정한다.
+  - iOS 공유 시트는 사용자 제스처 직후에만 열리므로, 쿠폰 이미지는 `hooks/useCouponImageFile.ts`(`useQuery`, `staleTime: Infinity`)로 저장 버튼이 보일 때 미리 File로 받아 두고 탭 시점에 바로 `navigator.share`에 넘긴다. 아직 못 받았으면 앵커 다운로드.
+  - API 오류 본문 접근(`error.response.data.error.code`)에 옵셔널 체이닝을 넣어 프록시의 HTML 404 등에서 TypeError가 나지 않게 했다(`useMyCoupon`, `couponError`).
+  - `usePostReview`도 `withVisitorSession`을 쓰도록 치환(중복 제거). `motion.create(Link)`는 `shared/components/MotionLink.tsx` 하나로 모아 7개 파일에서 import. Reveal 간격 `0.1`은 `shared/constants/motion.ts`의 `REVEAL_STAGGER`로 통일(EVENT 쪽 5개 파일. ABOUT의 지역 상수는 범위 밖이라 그대로).
+  - 래스터 내장 SVG·사진을 `<img>`로 쓰는 예외를 `docs/convention.md` 아이콘 절에 명시했다.
+  - 리뷰 지적 중 유지한 것: `withVisitorSession`의 선행 세션 POST(명세 "쿠폰 API 호출 전에 세션 발급 API를 먼저 호출" 준수), `/event/sponsor`에 진입 링크 없음(시안대로 유지, 사용자 결정 2026-10-06).
 - (확인 필요) 작품별 인스타그램 카드뉴스 게시물 URL 9개 — 게시 후 `pages/works/constants/instagramLinks.ts`에 채운다.
 - (확인 필요) PARTNER QR 토큰의 URL 파라미터명 (`qrToken` 가정).
 - (확인 필요) 제휴사 매장 지도 URL(현재 네이버 지도 검색 URL, `pages/event/constants/partners.ts`), 인클리어 카카오톡 채널 URL(현재 카카오톡 스토어, `pages/event/constants/sponsors.ts`). 소개문은 시안 문구를 그대로 썼다.
