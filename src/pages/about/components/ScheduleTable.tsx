@@ -1,4 +1,4 @@
-import Reveal from '@/pages/about/components/Reveal';
+import Reveal from '@/shared/components/Reveal';
 import { SCHEDULE } from '@/pages/about/constants/about';
 import { Fragment } from 'react';
 

@@ -1,3 +1,4 @@
+import { INSTAGRAM_PROFILE_URL } from '@/shared/constants/links';
 import type {
   CommitteeMember,
   QuickLink,
@@ -61,7 +62,7 @@ export const QUICK_LINKS: QuickLink[] = [
   },
   {
     label: 'dswu_itmedia_26',
-    url: 'https://www.instagram.com/dswu_itmedia_26/',
+    url: INSTAGRAM_PROFILE_URL,
     icon: 'instagram',
   },
 ];
