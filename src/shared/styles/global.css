@@ -27,3 +27,39 @@
     display: none;
   }
 }
+
+/* 페이지 전환(View Transitions API). viewTransition을 켠 Link·navigate에서만 동작하고,
+   미지원 브라우저는 즉시 전환된다. 방향(data-nav-direction)은 RootLayout이 설정한다. */
+@keyframes slide-in-from-right {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slide-out-to-right {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+/* 기본 크로스페이드를 끄고 두 스냅샷을 그대로 겹쳐 둔다 */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* 앞으로: 새 화면이 이전 화면 위로 오른쪽에서 들어온다 */
+  :root[data-nav-direction='forward']::view-transition-new(root) {
+    animation: slide-in-from-right 0.3s cubic-bezier(0.32, 0.72, 0, 1) both;
+  }
+
+  /* 뒤로: 이전 화면이 새 화면 위에서 오른쪽으로 빠진다.
+     both: 애니메이션이 끝난 뒤 전환 레이어가 정리될 때까지 끝 상태를 유지한다.
+     없으면 마지막 한두 프레임 동안 이전 화면이 제자리로 돌아와 깜빡인다. */
+  :root[data-nav-direction='back']::view-transition-old(root) {
+    z-index: 1;
+    animation: slide-out-to-right 0.3s cubic-bezier(0.32, 0.72, 0, 1) both;
+  }
+}
