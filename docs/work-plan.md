@@ -268,6 +268,7 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
   - 내부 약도 SVG는 "틀"만 쓴다(사용자 제공 studio{2,3,4}.svg에서 배경 rect·자리 블록 제거, studio2는 드롭섀도용 `translate(0 10)`을 `translate(0 -10)`으로 상쇄해 320×160으로 정규화). 블록까지 SVG에 두면 선택 상태를 바꿀 수 없고 좌표를 SVG·상수 두 곳에서 관리하게 되기 때문. L자 블록은 모서리까지 포함된 Figma path를 상수로 옮겼고, 직사각형은 `rx 4`로 그린다. 핀 위치는 직사각형 중심, L자는 모서리 정사각형 중심(Click ver. 시안의 (32,128)).
   - 진입 애니메이션: 배치도는 `motion.div` 페이드인 0.4초(목록 행과 같은 값, 위치 이동 없음). 핀은 `motion.g`로 `y 8→0 · scale 0.5→1 · opacity`, spring(stiffness 500, damping 22)으로 "위로 뿅" 나타난다. 선택될 때만 마운트되므로 다른 부스로 옮겨도 다시 재생. `useReducedMotion`이면 둘 다 즉시 표시.
 - 2026-10-05: 스튜디오별·부스별 작품 배치를 사용자 제공 확정본으로 반영(`booths.ts`). 임시 배치 표시 제거.
+- 2026-10-05: MAP에서 부스를 바꿀 때 이전 내부 약도가 남아 쌓이던 버그 수정(사용자 리포트). 원인은 약도 `motion.div`와 `WorkList`가 형제인데 같은 key(`studio-N`)를 받아 React가 "같은 key의 형제" 경고와 함께 이전 패널을 제거하지 못한 것. key에 `floor-plan:`·`list:` 접두어를 붙여 구분했다.
 - 2026-10-05 (MAP 코드 리뷰 반영):
   - MAP 선택 상태를 `useState`에서 **URL 쿼리(`?booth=`·`?work=`)**로 옮겼다. 상태로 두면 상세에서 뒤로 돌아올 때 처음 진입한 `?workId=`가 다시 읽혀 다른 부스가 선택되고, GNB로 `/map`에 다시 와도 이전 선택이 남는 문제가 있었다. `WorkHero`의 링크는 `?work=`로 바꿨다.
   - `Booth.workIds`와 `floorPlan.areas[].workId`가 같은 연결의 복사본이라, `Booth`를 `SimpleBooth(workIds)` | `FloorPlanBooth(floorPlan)` 유니언으로 나누고 `getBoothWorkIds()`로 합친다. 자리가 바뀌면 `areas`만 고치면 된다.

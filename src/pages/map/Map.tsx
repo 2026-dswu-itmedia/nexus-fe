@@ -83,10 +83,11 @@ const Map = () => {
           onBoothClick={handleBoothClick}
         />
       </motion.div>
-      {/* 작품이 여럿인 스튜디오(2·3·4)는 내부 약도를 띄운다. 부스가 바뀌면 key로 다시 마운트되어 다시 페이드인된다. */}
+      {/* 작품이 여럿인 스튜디오(2·3·4)는 내부 약도를 띄운다. 부스가 바뀌면 key로 다시 마운트되어 다시 페이드인된다.
+          아래 WorkList도 key로 재마운트하므로, 형제끼리 key가 겹치지 않게 접두어를 붙인다(겹치면 React가 이전 패널을 못 지운다). */}
       {selectedBooth?.floorPlan && (
         <motion.div
-          key={selectedBooth.id}
+          key={`floor-plan:${selectedBooth.id}`}
           className="mt-6"
           initial={shouldReduceMotion ? false : { opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -101,7 +102,7 @@ const Map = () => {
       )}
       {/* 선택이 바뀌면 목록을 다시 마운트해 행이 다시 올라오게 한다. */}
       <WorkList
-        key={selectedWorkId ?? selectedBooth?.id ?? 'all'}
+        key={`list:${selectedWorkId ?? selectedBooth?.id ?? 'all'}`}
         works={listedWorks}
         emptyMessage="작품이 없습니다"
         className="mt-10"
