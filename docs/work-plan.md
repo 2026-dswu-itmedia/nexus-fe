@@ -115,7 +115,7 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 - [x] `pages/works/apis/reviews.ts`: `getReviews(artworkId, page)`, `postReview(artworkId, content)`. `encodeURIComponent(artworkId)`.
 - [x] `pages/works/hooks/useReviews.ts`: `useQuery({ queryKey: ['reviews', workId, page], staleTime: 0, placeholderData: keepPreviousData })`.
 - [x] `pages/works/hooks/usePostReview.ts`: `useMutation`; `mutationFn`에서 `postVisitorSession()` → `postReview()`. 성공 시 `['reviews', workId]` invalidate, 1페이지 이동·입력 비우기는 `ReviewForm`의 `mutate(..., { onSuccess })`에서 처리. 401이면 세션 재발급 후 1회 재시도. 429·500은 서버 `error.message`를 폼 아래 표시, 응답 없으면 네트워크 안내.
-- [x] `components/WorkHero.tsx`: 대표 이미지(`getWorkImage`, 3:2), 제목(`semibold-24`) + `ic-location-24`(→ `/map?workId=`) + `ic-go-link-24`(작품별 인스타그램 카드뉴스, `<a target="_blank">`), `TeamBadge`, 한 줄 소개(`whitespace-pre-line`), `KeywordChip` 3개. 카드뉴스 URL은 `pages/works/constants/instagramLinks.ts`의 `getWorkInstagramUrl(workId)`. **게시 전이라 모두 비어 있고, 비어 있으면 전공 프로필(`shared/constants/links.ts` `INSTAGRAM_PROFILE_URL`, ABOUT 바로가기와 공유)로 이동**. (사용자 요청 2026-10-05. 처음엔 ↗를 카카오 공유로 보고 제외했었음)
+- [x] `components/WorkHero.tsx`: 대표 이미지(`getWorkImage`, 3:2), 제목(`semibold-24`) + `ic-location-24`(→ `/map?work=`) + `ic-go-link-24`(작품별 인스타그램 카드뉴스, `<a target="_blank">`), `TeamBadge`, 한 줄 소개(`whitespace-pre-line`), `KeywordChip` 3개. 카드뉴스 URL은 `pages/works/constants/instagramLinks.ts`의 `getWorkInstagramUrl(workId)`. **게시 전이라 모두 비어 있고, 비어 있으면 전공 프로필(`shared/constants/links.ts` `INSTAGRAM_PROFILE_URL`, ABOUT 바로가기와 공유)로 이동**. (사용자 요청 2026-10-05. 처음엔 ↗를 카카오 공유로 보고 제외했었음)
 - [x] `components/MemberChips.tsx`: 팀원 이름 + `ChevronRight` 칩(`navy-010` 배경), `Link to=/students/:id`.
 - [x] `components/DescriptionTabs.tsx`: "작품 소개 / 기획 의도" 2탭(`useState`), 활성 탭 네이비 배경, 높이 40px. 본문 `whitespace-pre-line`.
 - [x] `components/ReviewForm.tsx`(시안 `Comment.png`, 2026-10-05 갱신): 자동 높이 textarea(Enter 등록, Shift+Enter 줄바꿈). 4개 상태 — 기본: ✨ + placeholder + 네이비 화살표 / 포커스·미입력: ✨·placeholder 숨김 + `0/80` + 회색 화살표 / 입력 중: `n/80` + 네이비 화살표 / 80자 초과: 글자 수 `semibold-14` 검정 + 회색 화살표 + 아래 `Info` 아이콘 "최대 80자까지 작성 가능해요"(spring pop, `AnimatePresence`). 80자 초과는 입력은 되지만 제출 불가(시안의 `85/80` 상태를 보여주기 위해 hard cap 대신 제출 차단). 전송 중 disabled.
@@ -164,12 +164,13 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 
 시안: `[Map] Home.png`, `Studio Large ver.`, `Studio Large - Click ver.`, `Studio Small ver.`.
 
-- [ ] `pages/map/types/booth.ts`: `Studio { id: 'studio-2'..'studio-6'; label; size: 'large' | 'small'; booths: Booth[] }`, `Booth { id; workId; area }`(내부 약도 위치).
-- [ ] `pages/map/constants/studios.ts`: 스튜디오 2~6과 작품 9개 배치. **실제 배치는 사용자에게 확인**(없으면 임시 배치 후 결정 기록에 "임시" 표시).
-- [ ] `components/FloorPlan.tsx`: 시안 전체 배치도를 Tailwind `grid`/`absolute`로 구성. 고정 블록(LED, 포토월, 제휴부스, 협찬부스×2, 리셉션, 대강당, 엘리베이터 아이콘, 동선 화살표)은 회색, 스튜디오 2~6은 `navy-075` 클릭 가능 버튼. 선택된 스튜디오는 `navy-100` + `ic-location-24` 핀. 이미지가 아닌 DOM으로 만들어 클릭·하이라이트 처리.
-- [ ] `components/StudioDetail.tsx`: `size === 'large'`일 때 네이비 패널에 내부 약도(부스 블록 2개 이상, 클릭 시 흰색 + 핀 하이라이트, 우하단 입구 화살표). `small`은 패널 없이 바로 목록.
-- [ ] `Map.tsx`: 상태 `selectedStudioId`, `selectedBoothId`(`useState`). 하단 목록은 선택 없음 → 전체 작품, 스튜디오 선택 → 해당 스튜디오 작품들, 부스 선택 → 해당 작품 1개. `WorkListItem` 재사용. `useSearchParams`의 `workId`가 있으면 마운트 시 해당 스튜디오·부스를 미리 선택(WORKS 상세 → MAP 연결).
-- [ ] 검증: 스튜디오 클릭 전환, Large/Small 분기, `?workId=`로 진입 시 하이라이트, 작품 클릭 → 상세. `pnpm build`, `pnpm lint`.
+- [x] `pages/map/types/booth.ts`: `Booth { id: 'studio-2'..'studio-6'; number; x; y; width; height; workIds }`. 배치도 좌표(viewBox 320×304, px)와 작품 연결을 한 곳에 둔다. 작품 데이터(`exhibition.json`)에는 부스 필드가 없으므로(api-spec 1장) 부스 쪽에서 `workIds`로 연결한다.
+- [x] `pages/map/constants/booths.ts`: 스튜디오 2~6 좌표(시안 1:1 측정값) + 작품 9개 배치(사용자 제공 확정본 2026-10-05: 2 = 뭉게구름·아자·여학교의 별 / 3 = 괄호·플로우 / 4 = 개구락찌·Synaction / 5 = Soundspace / 6 = 흰). 스튜디오 5·6은 `workIds`, 2·3·4는 `floorPlan.areas[].workId`가 기준.
+- [x] `components/BoothMap.tsx`: 인라인 SVG(viewBox `0 0 320 304`, 컨테이너 폭에 맞춰 스케일). 클릭되지 않는 배경(LED·대강당·포토월·협찬·제휴·리셉션·화살표·아이콘)은 Figma export `shared/assets/images/map/map-background.svg`를 `?react`로 한 번 깔고, 스튜디오 2~6만 좌표 상수로 `<rect rx=4>` + 라벨 두 줄(`<text>`)을 그린다. 기본 `navy-075`, 선택 `navy-100` + 라벨 대신 `ic-location-24` 핀(24px, 흰색). 부스 `<g>`는 focus 불가(아래 결정 기록). 선택 시 핀은 스프링 팝업, 배치도는 진입 시 0.4초 페이드인.
+- [x] `Map.tsx`: 배치도 + (스튜디오 2·3·4면) 내부 약도 + 하단 `WorkList`. 선택 상태는 **URL 쿼리 `?booth=studio-4&work=hearing`이 기준**(`useState` 없음). 부스 클릭 → `booth` 설정(같은 부스 다시 클릭 시 해제, `work` 제거) 후 하단에 그 부스의 작품 목록(작품 1개여도 바로 이동하지 않음). 약도의 자리 클릭 → `work` 설정(다시 클릭 시 해제)으로 그 작품 1개만 목록. 선택 없으면 전체 목록. WORKS 상세 위치 아이콘은 `?work=`만 넘기고 부스는 MAP이 찾는다. 잘못된 값은 선택 없음으로 처리.
+- [x] `shared/components/WorkList.tsx`: `Works.tsx`에 있던 목록 + stagger 페이드업 + 빈 결과 문구를 분리(WORKS·MAP 공용).
+- [x] 스튜디오 내부 약도(`Studio Large ver.`·`Click ver.` 시안): `components/StudioFloorPlan.tsx`(viewBox 320×160). 사용자 제공 `studio{2,3,4}.svg`에서 배경·자리 블록을 뺀 틀(입구·화살표·라벨)을 `shared/assets/images/map/studio-N.svg`로 두고, 배경은 `fill-navy-075`, 자리는 `Booth.floorPlan.areas`(rect는 `rx 4`, L자는 Figma path 그대로)로 `fill-white-075`, 선택 시 `fill-white-100` + 네이비 `MapPin`. 핀은 `components/MapPin.tsx`로 분리해 배치도(흰 핀)와 공용. 패널은 카드 아래 24px(`mt-6`), 목록은 패널 아래 40px(`mt-10`, 시안 측정값). 자리 위치는 사용자 확인(2 = 아래 뭉게구름·왼쪽 여학교의 별·오른쪽 아자 / 3 = 왼쪽 플로우·오른쪽 괄호 / 4 = 아래 Synaction·오른쪽 개구락찌).
+- [x] 검증: 브라우저(Chrome, 375px)에서 배치도 렌더·라벨 위치, 스튜디오 4 클릭 → 핀 + 목록 2개, 스튜디오 6 클릭 → 핀 + 목록 1개 → 작품 클릭 시 상세 이동, 같은 부스 재클릭 → 전체 목록, `/map?work=hearing` 진입 → 스튜디오 4 핀 + 자리 핀 + 목록 1개, WORKS 목록 회귀 없음 확인. `pnpm build`, `pnpm lint` 통과.
 
 ## 7. Phase 6 — STUDENTS `/students`, `/students/:studentId` (브랜치 `feat/students`)
 
@@ -253,10 +254,31 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
   - `exhibition.json`의 `image` 필드는 원본 파일명(`.jpeg`/`.png`)을 그대로 두고, `shared/utils/image.ts`가 **확장자를 뺀 이름**으로 매칭한다. JSON은 명세 데이터라 손대지 않기 위함. 같은 이름에 확장자만 다른 파일이 둘이면 충돌하지만 현재 없다.
   - 스켈레톤은 라이브러리 없이 `shared/components/SkeletonImage.tsx`로 직접 구현(필요한 건 로드 전 `animate-pulse` 회색 박스뿐이라 `react-loading-skeleton` 등은 과함). 기존 5곳(`StudentListItem`·`StudentDetail`·`WorkCard`·`WorkHero`·`WorkListItem`)의 `imageUrl ? <img> : <div 회색>` 분기를 이 컴포넌트로 합쳤다. `src` 없음 → 회색 정지, 로딩 중 → `motion-safe:animate-pulse`, 로드 후 0.3초 페이드인. 캐시된 이미지는 `onLoad`가 안 올 수 있어 `img.complete`를 effect에서 확인한다. 목록은 `loading="lazy"`, 상세 히어로·프로필은 `eager`. `WorkListItem` placeholder에만 있던 `rounded-sm`은 다른 placeholder와 통일하기 위해 제거(실제 이미지에는 원래 없던 값).
   - `partners/`의 PNG(6.8MB)는 직접 import 경로로 쓰일 수 있어 이번 범위에서 제외(보류 목록).
+- 2026-10-05 (Phase 5 구현 중 확정, 사용자 프롬프트 기준):
+  - 배치도는 이미지·단일 SVG 컴포넌트가 아니라 **배경 SVG 1장 + 데이터 기반 부스 레이어**다. 배경은 Figma export(`map-background.svg`, 고정색 `#ECECEC`·`#999999` 유지)이고, 부스는 `BOOTHS` 좌표로 그려 선택·하이라이트를 DOM으로 바꾼다.
+  - 계획서의 `Studio/Booth` 2단 타입은 쓰지 않는다. IA가 클릭 단위를 "부스"라 부르고 내부 약도가 범위 밖이라, 클릭 단위 = `Booth`(id `studio-N`) 하나로 둔다.
+  - 프롬프트의 `Work.boothId` 대신 `Booth.workIds`로 연결한다. `exhibition.json`은 명세 데이터라 필드를 추가하지 않는다.
+  - 진입 쿼리는 프롬프트의 `?boothId=`가 아니라 작품 ID(`?work=`, 처음엔 `?workId=`)를 쓴다(WORKS 쪽이 MAP 상수를 알 필요가 없고, 부스 ID는 MAP 내부 개념).
+  - 핀 아이콘은 lucide `MapPin`(선 아이콘)이 아니라 이미 `currentColor`로 바꿔 둔 Figma `ic-location-24`(채운 핀)를 쓴다. 시안의 핀과 모양이 같다.
+  - 카테고리 필터(IA·프롬프트에 있었음)는 **제거**(사용자 결정 2026-10-05). 시안에 없고 배치도가 GNB 아래 24px인 시안 레이아웃을 지킨다. `docs/ia.md` MAP 항목도 함께 수정.
+  - 부스 클릭은 작품 수와 무관하게 선택 → 하단 목록이다(사용자 결정 2026-10-05). 처음엔 IA대로 1팀이면 바로 상세로 보냈으나, 스튜디오 2·3·4와 같은 흐름으로 통일했다.
+  - 시안 px 측정값(360px 기준): 카드 320×304, 1px `navy-010` 테두리(Figma center stroke를 CSS border로), 라운드 4. 라벨 "스튜디오" 10px(토큰 없음 → `text-[0.625rem] tracking-tight`) + 숫자 `semibold-12`, 두 줄 중심이 부스 중심에서 −6.5px/+6px. 카드 → 목록 40px(`mt-10`).
+  - 하단 목록은 WORKS와 같은 stagger 페이드업을 쓰기 위해 `WorkList`를 shared로 분리했다("두 페이지 이상에서 실제로 공유될 때만 shared"). `parseCategory`는 MAP이 안 쓰게 되어 `Works.tsx` 로컬로 유지. 부스 탭 피드백(`whileTap`)은 SVG transform-origin 문제가 있어 넣지 않았다(핀 하나를 `motion.g`로 키우는 건 motion이 `getBBox()`로 중심을 잡아 문제없다).
+  - 부스 `<g>`의 `role="button" tabIndex={0}`은 **제거**(사용자 요청 2026-10-05 "클릭하면 테두리가 생긴다"). 원인: Chrome은 SVG 요소를 `:focus-visible`이 아닌 `:focus` 기준으로 `outline: auto`를 그려서 마우스 클릭만 해도 테두리가 남고, 다른 곳을 눌러 focus가 옮겨가야 사라진다(브라우저에서 `document.activeElement` = `<g>`, `:focus-visible` false, computed outline `auto` 확인). 키보드로는 부스를 고를 수 없지만 선택 없을 때 하단 전체 목록으로 모든 작품에 도달할 수 있다. cursor는 `[role=button]` 규칙 대신 `cursor-pointer` 클래스.
+  - 내부 약도 SVG는 "틀"만 쓴다(사용자 제공 studio{2,3,4}.svg에서 배경 rect·자리 블록 제거, studio2는 드롭섀도용 `translate(0 10)`을 `translate(0 -10)`으로 상쇄해 320×160으로 정규화). 블록까지 SVG에 두면 선택 상태를 바꿀 수 없고 좌표를 SVG·상수 두 곳에서 관리하게 되기 때문. L자 블록은 모서리까지 포함된 Figma path를 상수로 옮겼고, 직사각형은 `rx 4`로 그린다. 핀 위치는 직사각형 중심, L자는 모서리 정사각형 중심(Click ver. 시안의 (32,128)).
+  - 진입 애니메이션: 배치도는 `motion.div` 페이드인 0.4초(목록 행과 같은 값, 위치 이동 없음). 핀은 `motion.g`로 `y 8→0 · scale 0.5→1 · opacity`, spring(stiffness 500, damping 22)으로 "위로 뿅" 나타난다. 선택될 때만 마운트되므로 다른 부스로 옮겨도 다시 재생. `useReducedMotion`이면 둘 다 즉시 표시.
+- 2026-10-05: 스튜디오별·부스별 작품 배치를 사용자 제공 확정본으로 반영(`booths.ts`). 임시 배치 표시 제거.
+- 2026-10-05: MAP에서 부스를 바꿀 때 이전 내부 약도가 남아 쌓이던 버그 수정(사용자 리포트). 원인은 약도 `motion.div`와 `WorkList`가 형제인데 같은 key(`studio-N`)를 받아 React가 "같은 key의 형제" 경고와 함께 이전 패널을 제거하지 못한 것. key에 `floor-plan:`·`list:` 접두어를 붙여 구분했다.
+- 2026-10-05 (MAP 코드 리뷰 반영):
+  - MAP 선택 상태를 `useState`에서 **URL 쿼리(`?booth=`·`?work=`)**로 옮겼다. 상태로 두면 상세에서 뒤로 돌아올 때 처음 진입한 `?workId=`가 다시 읽혀 다른 부스가 선택되고, GNB로 `/map`에 다시 와도 이전 선택이 남는 문제가 있었다. `WorkHero`의 링크는 `?work=`로 바꿨다.
+  - `Booth.workIds`와 `floorPlan.areas[].workId`가 같은 연결의 복사본이라, `Booth`를 `SimpleBooth(workIds)` | `FloorPlanBooth(floorPlan)` 유니언으로 나누고 `getBoothWorkIds()`로 합친다. 자리가 바뀌면 `areas`만 고치면 된다.
+  - 내부 약도의 클릭은 자리 도형이 아니라 핀까지 감싸는 `<g>`에서 받는다(핀을 눌러도 해제되게). `WorkList`의 빈 결과 문구도 "동작 줄이기"를 따른다. `WorkList`의 `listKey` prop은 React `key`로 대체. 페이드 값은 `shared/constants/motion.ts`(`FADE_TRANSITION`·`ROW_STAGGER`)로 모아 MAP·목록이 공유한다(`Students.tsx`의 복사본은 범위 밖이라 그대로).
+  - 배치도·약도 `<svg>`에 `role="group"`, 부스·자리 `<g>`에 `<title>`을 넣어 스크린리더가 이름을 읽게 했다(focus 불가 결정은 유지).
+  - Figma export SVG 위치 규칙을 "아이콘은 `icons/`, 배경·일러스트는 `images/<영역>/`"으로 `CLAUDE.md`·`docs/convention.md`에 명시했다(`images/graphic`, `images/partners` 선례와 `images/map` 기준).
 - 2026-10-05: 백엔드 운영 서버 배포 전까지 **dev 전용 mock API**(`mocks/apiMock.ts`, Vite 미들웨어)로 감상평 UI 작업을 진행한다. `.env`에 `VITE_API_MOCK=true`, `VITE_API_BASE_URL=/api`를 두면 `pnpm dev`에서 세션·감상평 작성·조회를 명세 구조대로 응답한다(작품당 11개 시드, 메모리 저장이라 서버 재시작 시 초기화, 300ms 지연). 실제 서버 연결 시 `VITE_API_MOCK`을 비우고 `VITE_API_BASE_URL=http://localhost:4000/api`(또는 운영 주소)로 바꾸면 된다. 라이브러리(MSW 등)는 추가하지 않았다. 쿠폰 API는 Phase 4 착수 시 mock에 추가한다.
 - (확인 필요) 작품별 인스타그램 카드뉴스 게시물 URL 9개 — 게시 후 `pages/works/constants/instagramLinks.ts`에 채운다.
 - (확인 필요) PARTNER QR 토큰의 URL 파라미터명 (`qrToken` 가정).
-- (확인 필요) 스튜디오별 작품 배치, 제휴사 매장 지도 URL, 협찬사 링크 URL·소개문.
+- (확인 필요) 제휴사 매장 지도 URL, 협찬사 링크 URL·소개문.
 - (확인 필요) ABOUT 임시 URL: 학과 홈페이지 `https://itmedia.duksung.ac.kr/`, Instagram `https://www.instagram.com/dswu_itmedia_26/`. `pages/about/constants/about.ts`에서 교체.
 - (확인 필요) 네이버 지도: NCP 콘솔에서 Maps 서비스 Client ID 발급 후 `.env`에 `VITE_NAVER_MAP_CLIENT_ID` 설정, 콘솔의 Web 서비스 URL에 배포 도메인·`http://localhost:5173` 등록. 지도 좌표(37.655211, 127.048241)는 주소 검색값이므로 실제 핀 위치 확인.
 - (확인 필요) PARTNER Step2에서 첫 행 chevron / 나머지 다운로드 아이콘의 의미.
@@ -266,6 +288,6 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 - 카카오톡 공유 중 WORKS 상세의 작품별 공유(`Kakao.Share.sendDefault` 또는 별도 템플릿). ABOUT 초대장 공유는 Phase 2에서 완료했고 SDK 로더(`shared/utils/kakaoShare.ts`)를 재사용한다.
 - 제휴사 상세 "쿠폰을 이미지로 저장하기" — `html-to-image` 등 라이브러리 추가 필요.
 - 404·로딩 로띠 애니메이션(`@lottiefiles/dotlottie-react` 설치됨, 파일 미수령. ABOUT 키비주얼 로띠는 Phase 2에서 적용 완료).
-- IA에만 있고 시안·데이터에 없는 항목: STUDENTS 상세 학번·인사말·SNS·이메일, MAP 카테고리 필터, ABOUT 지하철·버스 안내.
+- IA에만 있고 시안·데이터에 없는 항목: STUDENTS 상세 학번·인사말·SNS·이메일, ABOUT 지하철·버스 안내. (MAP 카테고리 필터는 2026-10-05 IA에서 제거.)
 - `AGENTS.md`가 4페이지 기준으로 낡아 있음(EVENT 누락) — 사용자 요청 시 갱신.
 - `shared/assets/images/partners/` PNG(약 6.8MB) 리사이즈 — `optimizeImages.mjs`의 `TARGETS`에 추가하면 되지만, 직접 import 경로(확장자 포함)로 쓰는 곳이 있으면 함께 고쳐야 한다.

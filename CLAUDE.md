@@ -41,7 +41,7 @@ src/
 
 - 한 페이지에서만 쓰는 코드는 해당 페이지 폴더에 둔다. 두 개 이상 페이지에서 실제로 공유될 때만 `shared/`로 옮긴다.
 - 핵심 도메인 타입(Work, Student, Booth)은 `shared/types/`, GNB·Footer는 `shared/components/`에서 관리한다.
-- Figma에서 export한 전용 SVG는 `shared/assets/icons/`에 둔다. 사용 규칙은 `docs/convention.md`의 Styling > 아이콘을 따른다.
+- Figma에서 export한 전용 SVG 중 아이콘은 `shared/assets/icons/`에, 배경·일러스트 같은 그래픽은 `shared/assets/images/<영역>/`(예: `images/map/`)에 둔다. 사용 규칙은 `docs/convention.md`의 Styling > 아이콘을 따른다.
 
 ## 핵심 규칙
 

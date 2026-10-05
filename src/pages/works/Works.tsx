@@ -1,16 +1,11 @@
 import FilterTabs from '@/shared/components/FilterTabs';
 import SearchInput from '@/shared/components/SearchInput';
-import WorkListItem from '@/shared/components/WorkListItem';
+import WorkList from '@/shared/components/WorkList';
 import { WORK_CATEGORY_FILTERS, type WorkCategory } from '@/shared/constants/category';
 import { getWorks } from '@/shared/utils/exhibition';
-import { motion, useReducedMotion } from 'motion/react';
 import { useSearchParams } from 'react-router-dom';
 
 const WORKS = getWorks();
-
-// 행마다 벌어지는 간격(초). 위에서부터 차례로 올라온다.
-const ROW_STAGGER = 0.05;
-const ROW_TRANSITION = { duration: 0.4, ease: 'easeOut' } as const;
 
 // URL의 category 값이 정의된 필터가 아니면 전체(null)로 본다.
 const parseCategory = (value: string | null): WorkCategory | null =>
@@ -20,7 +15,6 @@ const parseCategory = (value: string | null): WorkCategory | null =>
 const Works = () => {
   // 필터를 URL 쿼리로 유지해 새로고침하거나 상세에서 돌아와도 그대로 남고, 링크로 공유할 수 있다.
   const [searchParams, setSearchParams] = useSearchParams();
-  const shouldReduceMotion = useReducedMotion();
   const keyword = searchParams.get('q') ?? '';
   const category = parseCategory(searchParams.get('category'));
 
@@ -67,36 +61,13 @@ const Works = () => {
           onChange={handleCategoryChange}
         />
       </div>
-      {/* 진입 시와 검색·카테고리가 바뀔 때마다 결과 목록 전체가 아래에서 스르륵 올라온다.
-          ul의 key를 필터 값으로 두어 필터가 바뀌면 목록이 다시 마운트되고 모든 행이 다시 올라온다. */}
-      <ul key={`${normalizedKeyword}|${category ?? ''}`} className="mt-5">
-        {filteredWorks.map((work, index) =>
-          shouldReduceMotion ? (
-            <li key={work.id}>
-              <WorkListItem work={work} />
-            </li>
-          ) : (
-            <motion.li
-              key={work.id}
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...ROW_TRANSITION, delay: index * ROW_STAGGER }}
-            >
-              <WorkListItem work={work} />
-            </motion.li>
-          ),
-        )}
-      </ul>
-      {filteredWorks.length === 0 && (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={ROW_TRANSITION}
-          className="text-regular-14 text-subtext-700 py-10 text-center"
-        >
-          검색 결과가 없습니다
-        </motion.p>
-      )}
+      {/* 진입 시와 검색·카테고리가 바뀔 때마다 결과 목록 전체가 아래에서 스르륵 올라온다(WorkList). */}
+      <WorkList
+        key={`${normalizedKeyword}|${category ?? ''}`}
+        works={filteredWorks}
+        emptyMessage="검색 결과가 없습니다"
+        className="mt-5"
+      />
     </div>
   );
 };

@@ -27,9 +27,9 @@ const WorkHero = ({ work }: WorkHeroProps) => {
       />
       <div className="mt-9 flex items-center gap-1">
         <h1 className="text-semibold-24 text-black">{work.title}</h1>
-        {/* MAP에서 해당 부스를 하이라이트할 수 있도록 작품 ID를 쿼리로 넘긴다(docs/ia.md). */}
+        {/* MAP이 이 작품이 있는 부스(와 내부 자리)를 미리 선택하도록 작품 ID를 쿼리로 넘긴다(docs/ia.md). */}
         <Link
-          to={`/map?workId=${encodeURIComponent(work.id)}`}
+          to={`/map?work=${encodeURIComponent(work.id)}`}
           viewTransition
           aria-label="부스 위치 보기"
           className="text-subtext-900 shrink-0"
