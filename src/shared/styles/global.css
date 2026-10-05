@@ -11,6 +11,12 @@
     word-break: keep-all;
     overflow-wrap: break-word;
   }
+
+  /* Tailwind v4는 button 기본 커서가 default다. 눌리는 버튼(뒤로가기, 필터 탭 등)은 pointer로 보이게 한다. */
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
 }
 
 /* 가로 스크롤 탭(GNB, FilterTabs)에서 스크롤바를 숨긴다 */
