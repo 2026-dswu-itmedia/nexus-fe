@@ -253,7 +253,7 @@ import { ChevronRight, X, Search } from 'lucide-react';
 
 Lucide에 동일하거나 유사한 아이콘이 있으면 SVG를 별도로 추가하지 않는다.
 
-프로젝트 고유 아이콘, 브랜드 아이콘, Figma에서 별도 제작된 그래픽만 SVG로 사용한다. 파일은 `shared/assets/icons/`에 두고, `<img src="...">` 대신 `?react` import로 React Component처럼 사용한다.
+프로젝트 고유 아이콘, 브랜드 아이콘, Figma에서 별도 제작된 그래픽만 SVG로 사용한다. 아이콘은 `shared/assets/icons/`에, 배경·일러스트 같은 그래픽은 `shared/assets/images/<영역>/`(예: `images/map/`, `images/graphic/`)에 두고, 둘 다 `<img src="...">` 대신 `?react` import로 React Component처럼 사용한다.
 
 ```tsx
 // Bad
