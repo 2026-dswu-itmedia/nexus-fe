@@ -1,10 +1,6 @@
+import CouponActionButton from '@/pages/event/components/CouponActionButton';
 import type { Coupon } from '@/pages/event/types/coupon';
 import type { Partner } from '@/pages/event/types/event';
-import { ChevronRight } from 'lucide-react';
-import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
-
-const MotionLink = motion.create(Link);
 
 // ISO 날짜를 시안 표기 "YYYY/MM/DD"(기기 시간대 기준)로 바꾼다.
 const formatCouponDate = (isoDate: string) => {
@@ -64,16 +60,10 @@ const CouponCard = ({ partner, coupon }: CouponCardProps) => {
         </p>
       </div>
       {isLocked && (
-        // 카드 전체 기준 정중앙 160×44 버튼(시안 측정값). Step 안내 페이지로 보낸다.
-        <MotionLink
-          to="/event/partner"
-          viewTransition
-          whileTap={{ scale: 0.97 }}
-          className="bg-navy-100 text-semibold-14 text-white-100 absolute inset-0 m-auto flex h-11 w-40 items-center justify-center gap-2"
-        >
-          QR 스캔하러 가기
-          <ChevronRight className="size-4" aria-hidden="true" />
-        </MotionLink>
+        // 카드 전체 기준 정중앙에 버튼을 올린다. Step 안내 페이지로 보낸다.
+        <div className="absolute inset-0 flex items-center justify-center">
+          <CouponActionButton to="/event/partner">QR 스캔하러 가기</CouponActionButton>
+        </div>
       )}
     </article>
   );

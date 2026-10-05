@@ -8,6 +8,7 @@ import { isAxiosError } from 'axios';
 export const MY_COUPON_QUERY_KEY = ['coupon', 'me'] as const;
 
 // 404 COUPON_NOT_FOUND는 "아직 발급받지 않음"이라는 정상 상태이므로 에러가 아닌 null로 돌려준다.
+// 본문이 명세의 오류 구조가 아닌 404(프록시의 HTML 등)는 그대로 에러로 둔다.
 const fetchMyCoupon = async (): Promise<Coupon | null> => {
   try {
     return await withVisitorSession(getMyCoupon);
@@ -15,7 +16,7 @@ const fetchMyCoupon = async (): Promise<Coupon | null> => {
     if (
       isAxiosError<ApiError>(error) &&
       error.response?.status === 404 &&
-      error.response.data.error.code === 'COUPON_NOT_FOUND'
+      error.response.data?.error?.code === 'COUPON_NOT_FOUND'
     ) {
       return null;
     }
