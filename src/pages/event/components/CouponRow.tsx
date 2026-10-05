@@ -1,9 +1,6 @@
 import type { Partner } from '@/pages/event/types/event';
+import MotionLink from '@/shared/components/MotionLink';
 import { ChevronRight } from 'lucide-react';
-import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
-
-const MotionLink = motion.create(Link);
 
 interface CouponRowProps {
   partner: Partner;

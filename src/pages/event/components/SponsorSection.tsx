@@ -3,9 +3,7 @@ import SponsorListItem from '@/pages/event/components/SponsorListItem';
 import { SPONSORS } from '@/pages/event/constants/sponsors';
 import { getStackedCardClass } from '@/pages/event/utils/cardStack';
 import Reveal from '@/shared/components/Reveal';
-
-// 카드마다 순서대로 떠오르는 간격(초)
-const CARD_STAGGER = 0.1;
+import { REVEAL_STAGGER } from '@/shared/constants/motion';
 
 // EVENT 홈과 /event/sponsor가 같은 SPONSOR 영역을 보여준다(docs/work-plan.md 1장).
 const SponsorSection = () => {
@@ -19,7 +17,7 @@ const SponsorSection = () => {
       <ul className="mt-10 flex flex-col gap-1">
         {SPONSORS.map((sponsor, index) => (
           <li key={sponsor.id} className={getStackedCardClass(index)}>
-            <Reveal delay={index * CARD_STAGGER}>
+            <Reveal delay={index * REVEAL_STAGGER}>
               <SponsorListItem sponsor={sponsor} />
             </Reveal>
           </li>

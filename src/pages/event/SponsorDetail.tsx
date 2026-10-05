@@ -7,6 +7,7 @@ import BackHeader from '@/shared/components/BackHeader';
 import LinkRow from '@/shared/components/LinkRow';
 import NotFound from '@/shared/components/NotFound';
 import Reveal from '@/shared/components/Reveal';
+import { REVEAL_STAGGER } from '@/shared/constants/motion';
 import type { FC, SVGProps } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -45,7 +46,7 @@ const SponsorDetail = () => {
             NEX:US와 함께합니다
           </h2>
         </Reveal>
-        <Reveal className="mt-6" delay={0.1}>
+        <Reveal className="mt-6" delay={REVEAL_STAGGER}>
           <LinkRow
             variant="dark"
             href={sponsor.link.url}
@@ -53,12 +54,12 @@ const SponsorDetail = () => {
             icon={<LinkIcon className="size-6 shrink-0" aria-hidden="true" />}
           />
         </Reveal>
-        <Reveal className="mt-6" delay={0.2}>
+        <Reveal className="mt-6" delay={REVEAL_STAGGER * 2}>
           <p className="text-regular-14 text-white-075 text-center whitespace-pre-line">
             {sponsor.description}
           </p>
         </Reveal>
-        <Reveal className="mt-10 text-center" delay={0.3}>
+        <Reveal className="mt-10 text-center" delay={REVEAL_STAGGER * 3}>
           <p className="text-regular-12 text-white-075">PRODUCT DETAIL</p>
           <ul className="mt-3 flex flex-col gap-1">
             {sponsor.productTitles.map((title) => (
@@ -71,7 +72,7 @@ const SponsorDetail = () => {
         <ul className="mt-6 flex flex-col gap-5">
           {sponsor.productImages.map((src, index) => (
             <li key={src}>
-              <Reveal delay={0.4 + index * 0.1}>
+              <Reveal delay={REVEAL_STAGGER * (4 + index)}>
                 <img
                   src={src}
                   alt={`${sponsor.name} 협찬 물품 이미지 ${index + 1}`}

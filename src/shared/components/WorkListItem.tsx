@@ -1,13 +1,9 @@
+import MotionLink from '@/shared/components/MotionLink';
 import SkeletonImage from '@/shared/components/SkeletonImage';
 import type { Work } from '@/shared/types/exhibition';
 import { getStudentsByIds } from '@/shared/utils/exhibition';
 import { getWorkImage } from '@/shared/utils/image';
 import { ChevronRight } from 'lucide-react';
-import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
-
-// 행 전체를 누르는 동안 살짝 줄어드는 피드백을 주기 위해 Link를 motion 컴포넌트로 감싼다.
-const MotionLink = motion.create(Link);
 
 interface WorkListItemProps {
   work: Work;

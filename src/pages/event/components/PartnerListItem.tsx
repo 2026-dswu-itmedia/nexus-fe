@@ -1,15 +1,12 @@
 import type { Partner } from '@/pages/event/types/event';
+import MotionLink from '@/shared/components/MotionLink';
 import { ChevronRight } from 'lucide-react';
-import { motion } from 'motion/react';
-import { Link } from 'react-router-dom';
-
-const MotionLink = motion.create(Link);
 
 interface PartnerListItemProps {
   partner: Partner;
 }
 
-// 흰 카드: 매장 아이콘 + 이름 + chevron. 쿠폰이 없으면 상세에서 /event/partner로 돌려보낸다.
+// 흰 카드: 매장 아이콘 + 이름 + chevron. QR 미인증이면 상세의 쿠폰 카드가 잠기고 /event/partner로 안내하는 버튼이 보인다.
 const PartnerListItem = ({ partner }: PartnerListItemProps) => {
   return (
     <MotionLink

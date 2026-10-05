@@ -13,7 +13,7 @@ export const getReviews = async (artworkId: string, page: number) => {
   return data.data;
 };
 
-// 방문자 세션 필요. 호출 전에 postVisitorSession()을 먼저 실행한다.
+// 방문자 세션 필요. withVisitorSession()으로 감싸 호출한다.
 export const postReview = async (artworkId: string, content: string) => {
   const { data } = await api.post<ApiResponse<PostedReview>>(getReviewsUrl(artworkId), { content });
   return data.data;
