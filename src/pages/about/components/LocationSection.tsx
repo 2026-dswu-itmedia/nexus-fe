@@ -1,5 +1,5 @@
 import NaverMap from '@/pages/about/components/NaverMap';
-import Reveal from '@/pages/about/components/Reveal';
+import Reveal from '@/shared/components/Reveal';
 import { ADDRESS_LINES } from '@/pages/about/constants/about';
 import CheckIcon from '@/shared/assets/icons/ic-check-16.svg?react';
 import CopyIcon from '@/shared/assets/icons/ic-copy-16.svg?react';

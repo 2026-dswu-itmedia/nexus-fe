@@ -4,6 +4,8 @@ import type { Exhibition } from '@/shared/types/exhibition';
 // 타입 단언(as) 대신 주석을 써서 JSON 구조가 명세와 어긋나면 빌드에서 바로 드러나게 한다.
 const exhibition: Exhibition = exhibitionJson;
 
+export const getWorks = () => exhibition.works;
+
 export const getWorkById = (id: string) => exhibition.works.find((work) => work.id === id);
 
 export const getStudentById = (id: string) =>

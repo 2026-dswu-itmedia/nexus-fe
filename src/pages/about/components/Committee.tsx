@@ -1,4 +1,4 @@
-import Reveal from '@/pages/about/components/Reveal';
+import Reveal from '@/shared/components/Reveal';
 import { COMMITTEE_MEMBERS } from '@/pages/about/constants/about';
 
 // 제목 바 다음부터 행마다 순서대로 떠오르는 간격(초)

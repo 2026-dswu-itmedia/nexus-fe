@@ -15,7 +15,7 @@ const FilterTabs = <T,>({ items, value, onChange }: FilterTabsProps<T>) => {
             key={item.label}
             type="button"
             onClick={() => onChange(item.value)}
-            className={`shrink-0 ${isSelected ? 'text-semibold-14 text-navy-100' : 'text-regular-14 text-subtext-700'}`}
+            className={`shrink-0 transition-colors duration-200 ${isSelected ? 'text-semibold-14 text-navy-100' : 'text-regular-14 text-subtext-700'}`}
           >
             {item.label}
           </button>

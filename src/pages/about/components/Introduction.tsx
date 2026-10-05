@@ -1,4 +1,4 @@
-import Reveal from '@/pages/about/components/Reveal';
+import Reveal from '@/shared/components/Reveal';
 import { INTRO_PARAGRAPHS } from '@/pages/about/constants/about';
 import VectorLeft from '@/shared/assets/icons/ic-about-vector-left.svg?react';
 import VectorRight from '@/shared/assets/icons/ic-about-vector-right.svg?react';

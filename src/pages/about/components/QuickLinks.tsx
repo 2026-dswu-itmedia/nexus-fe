@@ -1,4 +1,4 @@
-import Reveal from '@/pages/about/components/Reveal';
+import Reveal from '@/shared/components/Reveal';
 import { QUICK_LINKS } from '@/pages/about/constants/about';
 import LogoDuksung from '@/shared/assets/logos/logo-duksung-24.svg?react';
 import LogoInstagram from '@/shared/assets/logos/logo-instagram-24.svg?react';
