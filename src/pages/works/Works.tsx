@@ -60,7 +60,7 @@ const Works = () => {
         onChange={handleKeywordChange}
         placeholder="프로젝트명을 검색해주세요"
       />
-      <div className="mt-6">
+      <div className="mt-5">
         <FilterTabs
           items={WORK_CATEGORY_FILTERS}
           value={category}
