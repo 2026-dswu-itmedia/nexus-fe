@@ -51,7 +51,7 @@ const Students = () => {
   );
 
   return (
-    <div className="flex flex-1 flex-col pt-6 pb-10">
+    <div className="flex flex-1 flex-col pt-6 pb-6">
       <SearchInput
         value={keyword}
         onChange={handleKeywordChange}

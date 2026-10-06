@@ -4,7 +4,7 @@ import { animate } from 'motion';
 import type { AnimationPlaybackControls } from 'motion';
 import { useEffect, useRef } from 'react';
 import type { MouseEvent, PointerEvent } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 
 // 이 거리(px) 이상 끌었으면 드래그로 보고, 놓을 때 탭 클릭(이동)을 막는다.
 const DRAG_THRESHOLD = 5;
@@ -115,9 +115,11 @@ const TopNavigation = () => {
   }, [pathname]);
 
   return (
-    <header className="bg-ivory-bg shadow-gnb sticky top-0 z-10">
+    <header className="bg-ivory-bg shadow-gnb sticky top-0 z-50">
       <div className="flex justify-center py-3">
-        <LogoNexus className="h-[1.875rem] w-auto" role="img" aria-label="NEX:US" />
+        <Link to="/" aria-label="NEX:US 홈으로">
+          <LogoNexus className="h-[1.875rem] w-auto" aria-hidden="true" />
+        </Link>
       </div>
       <nav
         ref={navRef}

@@ -71,7 +71,7 @@ const NaverMap = () => {
       ref={containerRef}
       role="img"
       aria-label="전시장 위치 지도"
-      className="bg-border aspect-4/3 w-full"
+      className="bg-border isolate aspect-4/3 w-full"
     />
   );
 };
