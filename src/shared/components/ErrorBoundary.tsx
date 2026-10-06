@@ -19,7 +19,7 @@ const ErrorBoundary = () => {
       <div className="text-regular-16 text-subtext-700 flex flex-1 items-center justify-center px-5 text-center">
         <p>{message}</p>
       </div>
-      <div className="pb-[env(safe-area-inset-bottom)]">
+      <div className="px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
         <Button onClick={handleHomeClick} icon={<ChevronRight className="size-6" />}>
           NEX:US 홈페이지 바로가기
         </Button>
