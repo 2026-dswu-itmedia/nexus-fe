@@ -303,6 +303,13 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
   - `usePostReview`도 `withVisitorSession`을 쓰도록 치환(중복 제거). `motion.create(Link)`는 `shared/components/MotionLink.tsx` 하나로 모아 7개 파일에서 import. Reveal 간격 `0.1`은 `shared/constants/motion.ts`의 `REVEAL_STAGGER`로 통일(EVENT 쪽 5개 파일. ABOUT의 지역 상수는 범위 밖이라 그대로).
   - 래스터 내장 SVG·사진을 `<img>`로 쓰는 예외를 `docs/convention.md` 아이콘 절에 명시했다.
   - 리뷰 지적 중 유지한 것: `withVisitorSession`의 선행 세션 POST(명세 "쿠폰 API 호출 전에 세션 발급 API를 먼저 호출" 준수), `/event/sponsor`에 진입 링크 없음(시안대로 유지, 사용자 결정 2026-10-06).
+- 2026-10-06 (세부 수정, 브랜치 `style/details`):
+  - GNB 로고를 `<Link to="/">`로 감싸 ABOUT으로 이동한다.
+  - GNB `z-10` → `z-50`. EVENT 카드 스택(`cardStack.ts`, 최대 `z-30`)이 GNB 위로 올라오던 문제. 네이버 지도 컨테이너에는 `isolate`를 줘 SDK가 로고에 넣는 z-index가 지도 안에서만 비교되게 했다(워터마크가 GNB 위로 보이던 문제).
+  - ABOUT 위원회 행에 위쪽부터 `z-30/20/10`을 줘 목소연 > 안유빈 > 이채진 순으로 겹친다(시안). `Reveal`의 transform 때문에 지정하지 않으면 뒤 행이 위에 그려졌다.
+  - `LinkRow`를 `motion.a` + `whileTap={{ scale: 0.98 }}`로 바꿔 목록 행과 같은 눌림 피드백을 준다(ABOUT 바로가기, 협찬·제휴 상세 공통).
+  - 오류 페이지(`ErrorBoundary`) 버튼 래퍼에 `px-5`, 하단 `1.5rem + safe-area`.
+  - 하단 패딩 통일(사용자 결정): WORKS·STUDENTS·MAP·작품 상세·학생 상세 `pb-6`(1.5rem), EVENT 홈 `pb-10`(2.5rem). PARTNER·SPONSOR 목록(`pb-10`)과 상세(`pb-5`), ABOUT은 그대로.
 - (확인 필요) 작품별 인스타그램 카드뉴스 게시물 URL 9개 — 게시 후 `pages/works/constants/instagramLinks.ts`에 채운다.
 - (확인 필요) PARTNER QR 토큰의 URL 파라미터명 (`qrToken` 가정).
 - (확인 필요) 제휴사 매장 지도 URL(현재 네이버 지도 검색 URL, `pages/event/constants/partners.ts`), 인클리어 카카오톡 채널 URL(현재 카카오톡 스토어, `pages/event/constants/sponsors.ts`). 소개문은 시안 문구를 그대로 썼다.
