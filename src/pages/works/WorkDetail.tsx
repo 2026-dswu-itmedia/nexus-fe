@@ -25,7 +25,7 @@ const WorkDetail = () => {
   return (
     <>
       <BackHeader />
-      <div className="flex flex-1 flex-col pt-5 pb-10">
+      <div className="flex flex-1 flex-col pt-5 pb-6">
         <Reveal>
           <WorkHero work={work} />
         </Reveal>

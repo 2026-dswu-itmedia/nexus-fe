@@ -9,7 +9,7 @@ import { REVEAL_STAGGER } from '@/shared/constants/motion';
 // 시안([Event] Home.png) 측정값: GNB 아래 40px, 제목→설명 12px, 설명→카드 48px, 섹션 사이 72px.
 const Event = () => {
   return (
-    <div className="flex flex-1 flex-col gap-18 pt-10 pb-15">
+    <div className="flex flex-1 flex-col gap-18 pt-10 pb-10">
       <SponsorSection />
       <section aria-label="제휴 매장">
         <SectionTitle

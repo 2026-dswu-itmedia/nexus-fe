@@ -29,7 +29,7 @@ const StudentDetail = () => {
   return (
     <>
       <BackHeader />
-      <div className="flex flex-1 flex-col pt-6 pb-10">
+      <div className="flex flex-1 flex-col pt-6 pb-6">
         <Reveal>
           <section className="flex items-end gap-4">
             <SkeletonImage

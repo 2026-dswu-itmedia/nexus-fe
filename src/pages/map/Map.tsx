@@ -70,7 +70,7 @@ const Map = () => {
       : WORKS;
 
   return (
-    <div className="flex flex-1 flex-col pt-6 pb-10">
+    <div className="flex flex-1 flex-col pt-6 pb-6">
       {/* 진입 시 배치도가 페이드인된다. OS의 "동작 줄이기"가 켜져 있으면 바로 보여준다. */}
       <motion.div
         initial={shouldReduceMotion ? false : { opacity: 0 }}
