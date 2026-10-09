@@ -313,8 +313,16 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
   - `LinkRow`를 `motion.a` + `whileTap={{ scale: 0.98 }}`로 바꿔 목록 행과 같은 눌림 피드백을 준다(ABOUT 바로가기, 협찬·제휴 상세 공통).
   - 오류 페이지(`ErrorBoundary`) 버튼 래퍼에 `px-5`, 하단 `1.5rem + safe-area`.
   - 하단 패딩 통일(사용자 결정): WORKS·STUDENTS·MAP·작품 상세·학생 상세 `pb-6`(1.5rem), EVENT 홈 `pb-10`(2.5rem). PARTNER·SPONSOR 목록(`pb-10`)과 상세(`pb-5`), ABOUT은 그대로.
+- 2026-10-09 (실서버 API 연동):
+  - 백엔드 임시 배포 `https://43.201.187.129/api`(도메인 구입 후 교체)를 `.env`의 `VITE_API_BASE_URL`로 연결하고 `VITE_API_MOCK`을 비웠다. Base URL은 `shared/apis/api.ts`에서만 읽는다. Swagger(`/api-docs`) 스키마가 기존 타입(`Review`·`ReviewPage`·`PostedReview`·`Coupon`·`ApiError`)과 일치해 API 모듈·훅은 수정하지 않았다.
+  - 쿠폰 발급 종료·만료는 2026-11-20 23:59 KST(`2026-11-20T14:59:00Z`). mock 만료 시각도 맞췄다. `CouponCard`의 유효기간은 기기 시간대가 아닌 `Asia/Seoul` 기준으로 표시한다(`Intl.DateTimeFormat`).
+  - 감상평 서버 제한은 trim 후 1~1,000자지만 UI는 시안대로 80자 제한을 유지한다(서버 범위 안).
+  - 검증: `localhost:5173`에서 `POST /visitor-sessions` 201 → `Set-Cookie: visitor_session`(`HttpOnly; Secure; SameSite=None`) 저장, 재호출 200(`created: false`), `GET /coupons/me` 쿠키 포함 404 `COUPON_NOT_FOUND` / 미포함 401, 감상평 목록 200. 감상평 작성·쿠폰 발급은 실데이터가 남아 호출하지 않았다.
+  - QR 토큰 파라미터명 `qrToken` 확정(백엔드 안내).
 - (확인 필요) 작품별 인스타그램 카드뉴스 게시물 URL 9개 — 게시 후 `pages/works/constants/instagramLinks.ts`에 채운다.
-- (확인 필요) PARTNER QR 토큰의 URL 파라미터명 (`qrToken` 가정).
+- ~~(확인 필요) PARTNER QR 토큰의 URL 파라미터명 (`qrToken` 가정).~~ 2026-10-09 백엔드 안내로 `qrToken` 확정.
+- (확인 필요) 쿠폰 저장 이미지(`images/partners/img-coupon-*.png`)에 유효기간 2026/11/06이 박혀 있다. API 만료일(2026/11/20)과 다르므로 이미지 교체 필요.
+- (확인 필요) Vercel 배포 후 실제 배포 URL·Preview URL을 백엔드에 전달해 허용 Origin에 추가. 도메인 구입 후 `VITE_API_BASE_URL` 교체(Vercel 환경변수 포함).
 - (확인 필요) 제휴사 매장 지도 URL(현재 네이버 지도 검색 URL, `pages/event/constants/partners.ts`), 인클리어 카카오톡 채널 URL(현재 카카오톡 스토어, `pages/event/constants/sponsors.ts`). 소개문은 시안 문구를 그대로 썼다.
 - (확인 필요) ABOUT 임시 URL: 학과 홈페이지 `https://itmedia.duksung.ac.kr/`, Instagram `https://www.instagram.com/dswu_itmedia_26/`. `pages/about/constants/about.ts`에서 교체.
 - (확인 필요) 네이버 지도: NCP 콘솔에서 Maps 서비스 Client ID 발급 후 `.env`에 `VITE_NAVER_MAP_CLIENT_ID` 설정, 콘솔의 Web 서비스 URL에 배포 도메인·`http://localhost:5173` 등록. 지도 좌표(37.655211, 127.048241)는 주소 검색값이므로 실제 핀 위치 확인.

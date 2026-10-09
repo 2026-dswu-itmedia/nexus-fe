@@ -10,8 +10,8 @@ import Footer from '@/shared/components/Footer';
 const About = () => {
   return (
     <>
-      {/* 섹션 간격 80px. 키비주얼(5:7)은 GNB 아래 40px에서 시작해 시안의 그래픽 하단 위치와 맞는다. */}
-      <div className="flex flex-1 flex-col gap-20 pt-10 pb-25">
+      {/* 섹션 간격 80px. 키비주얼(71:100)은 GNB 바로 아래에서 시작한다. */}
+      <div className="flex flex-1 flex-col gap-20 pb-25">
         <HeroGraphic />
         <Introduction />
         <ScheduleTable />
