@@ -20,6 +20,7 @@ export const PARTNERS: Partner[] = [
     usageNote: '1일 1회 사용 가능',
     mapUrl: getNaverMapSearchUrl('베리베리베이커리 창동'),
     couponImage: berryberryCoupon,
+    couponExpiresAt: '2026-11-06T23:59:59+09:00',
   },
   {
     id: 'jewel-changdong',
@@ -29,6 +30,7 @@ export const PARTNERS: Partner[] = [
     usageNote: '1회 사용 가능',
     mapUrl: getNaverMapSearchUrl('쥬얼 창동'),
     couponImage: jewelCoupon,
+    couponExpiresAt: '2026-11-20T23:59:59+09:00',
   },
   {
     id: 'osushi-changdong',
@@ -38,6 +40,7 @@ export const PARTNERS: Partner[] = [
     usageNote: '1일 1회 사용 가능',
     mapUrl: getNaverMapSearchUrl('오스시 창동씨드큐브점'),
     couponImage: osushiCoupon,
+    couponExpiresAt: '2026-11-06T23:59:59+09:00',
   },
 ];
 

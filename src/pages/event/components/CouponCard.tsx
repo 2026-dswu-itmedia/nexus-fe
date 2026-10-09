@@ -17,6 +17,9 @@ const formatCouponDate = (isoDate: string) => {
   return `${getPart('year')}/${getPart('month')}/${getPart('day')}`;
 };
 
+// 서버 쿠폰이 아직 유효해도 매장별 사용 기한이 지났으면 만료로 본다.
+const isPastPartnerExpiry = (partner: Partner) => Date.now() >= Date.parse(partner.couponExpiresAt);
+
 interface CouponCardProps {
   partner: Partner;
   // null이면 아직 QR 인증을 하지 않은 상태. 내용을 흐리게 가리고 가운데에 "QR 스캔하러 가기"를 띄운다.
@@ -27,7 +30,8 @@ interface CouponCardProps {
 // 미인증 상태(시안 Brand=*, Status=Disabled)에서도 점선과 notch는 선명하게 두고 글자·아이콘만 blur-coupon으로 가린다.
 const CouponCard = ({ partner, coupon }: CouponCardProps) => {
   const isLocked = coupon === null;
-  const isExpired = coupon?.status === 'EXPIRED';
+  const isExpired =
+    coupon !== null && (coupon.status === 'EXPIRED' || isPastPartnerExpiry(partner));
   const lockedClass = isLocked ? 'blur-coupon select-none' : '';
 
   return (
@@ -51,10 +55,10 @@ const CouponCard = ({ partner, coupon }: CouponCardProps) => {
           유효기간
           {coupon ? (
             <time
-              dateTime={coupon.expiresAt}
+              dateTime={partner.couponExpiresAt}
               className="text-semibold-14 text-subtext-500 ml-2 whitespace-nowrap"
             >
-              ~ {formatCouponDate(coupon.expiresAt)}
+              ~ {formatCouponDate(partner.couponExpiresAt)}
             </time>
           ) : (
             <span className="text-semibold-14 text-subtext-500 ml-2 whitespace-nowrap">

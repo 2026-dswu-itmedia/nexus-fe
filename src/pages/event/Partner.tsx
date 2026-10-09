@@ -89,7 +89,7 @@ const Partner = () => {
 
   return (
     <>
-      <BackHeader />
+      <BackHeader fallbackTo="/event" />
       {/* 다른 페이지와 같은 진입 애니메이션: 제목·1단계·2단계가 0.1초 간격으로 떠오르고,
           2단계 안의 매장 행은 목록(WorkList)처럼 조회가 끝난 뒤 위에서부터 차례로 올라온다. */}
       <div className="flex flex-1 flex-col pt-6 pb-10">
