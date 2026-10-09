@@ -54,6 +54,11 @@ export const ADDRESS_LINES = ['서울 도봉구 마들로 13길 84', '서울창�
 // 서울창업허브 창동(창동 아우르네) 좌표. 네이버 지도 중심·마커 위치로 쓴다.
 export const EXHIBITION_LOCATION = { lat: 37.655211, lng: 127.048241 };
 
+// 주소 옆 길찾기 버튼이 여는 네이버 지도 길찾기(대중교통). 출발지를 '-'로 비워 두면 사용자가 직접 입력한다.
+// 형식: /p/directions/{출발}/{도착: lng,lat,이름,placeId,타입}/{경유}/{수단}
+const EXHIBITION_PLACE_NAME = '서울창업허브 창동';
+export const NAVER_MAP_DIRECTIONS_URL = `https://map.naver.com/p/directions/-/${EXHIBITION_LOCATION.lng},${EXHIBITION_LOCATION.lat},${encodeURIComponent(EXHIBITION_PLACE_NAME)},,PLACE_POI/-/transit`;
+
 export const QUICK_LINKS: QuickLink[] = [
   {
     label: '덕성여자대학교 IT미디어공학전공',

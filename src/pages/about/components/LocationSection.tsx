@@ -1,8 +1,9 @@
 import NaverMap from '@/pages/about/components/NaverMap';
 import Reveal from '@/shared/components/Reveal';
-import { ADDRESS_LINES } from '@/pages/about/constants/about';
+import { ADDRESS_LINES, NAVER_MAP_DIRECTIONS_URL } from '@/pages/about/constants/about';
 import CheckIcon from '@/shared/assets/icons/ic-check-16.svg?react';
 import CopyIcon from '@/shared/assets/icons/ic-copy-16.svg?react';
+import GoLinkIcon from '@/shared/assets/icons/ic-go-link-16.svg?react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
@@ -46,25 +47,36 @@ const LocationSection = () => {
             <p key={line}>{line}</p>
           ))}
         </address>
-        <button
-          type="button"
-          onClick={handleCopyClick}
-          aria-label={isCopied ? '주소가 복사되었습니다' : '주소 복사'}
-          className="text-subtext-700 -m-1 flex shrink-0 items-center p-1"
-        >
-          <AnimatePresence mode="wait" initial={false}>
-            {isCopied ? (
-              <motion.span key="copied" className="flex items-center gap-1" {...FEEDBACK_MOTION}>
-                <CheckIcon className="size-4" aria-hidden="true" />
-                <span className="text-regular-14">복사됨</span>
-              </motion.span>
-            ) : (
-              <motion.span key="copy" className="flex" {...FEEDBACK_MOTION}>
-                <CopyIcon className="size-4" aria-hidden="true" />
-              </motion.span>
-            )}
-          </AnimatePresence>
-        </button>
+        <div className="flex shrink-0 items-center gap-3">
+          <button
+            type="button"
+            onClick={handleCopyClick}
+            aria-label={isCopied ? '주소가 복사되었습니다' : '주소 복사'}
+            className="text-subtext-700 -m-1 flex shrink-0 items-center p-1"
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              {isCopied ? (
+                <motion.span key="copied" className="flex items-center gap-1" {...FEEDBACK_MOTION}>
+                  <CheckIcon className="size-4" aria-hidden="true" />
+                  <span className="text-regular-14">복사됨</span>
+                </motion.span>
+              ) : (
+                <motion.span key="copy" className="flex" {...FEEDBACK_MOTION}>
+                  <CopyIcon className="size-4" aria-hidden="true" />
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
+          <a
+            href={NAVER_MAP_DIRECTIONS_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="네이버 지도에서 길찾기 (새 탭)"
+            className="text-subtext-700 -m-1 flex shrink-0 p-1"
+          >
+            <GoLinkIcon className="size-4" aria-hidden="true" />
+          </a>
+        </div>
       </Reveal>
     </section>
   );
