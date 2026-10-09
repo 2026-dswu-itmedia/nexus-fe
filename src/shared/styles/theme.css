@@ -1,6 +1,6 @@
 @theme {
-  /* 모바일 전용 화면의 콘텐츠 최대 폭 */
-  --container-mobile: 430px;
+  /* 모바일 전용 화면의 콘텐츠 최대 폭. 가장 넓은 아이폰(16 Pro Max, 440px)까지 여백 없이 채운다. */
+  --container-mobile: 440px;
 
   /* Font Family */
   --font-pretendard:
