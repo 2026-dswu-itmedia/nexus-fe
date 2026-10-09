@@ -2,12 +2,19 @@ import CouponActionButton from '@/pages/event/components/CouponActionButton';
 import type { Coupon } from '@/pages/event/types/coupon';
 import type { Partner } from '@/pages/event/types/event';
 
-// ISO 날짜를 시안 표기 "YYYY/MM/DD"(기기 시간대 기준)로 바꾼다.
+// API의 UTC 일시를 한국시간 기준 시안 표기 "YYYY/MM/DD"로 바꾼다(기기 시간대와 무관).
+const KST_DATE_FORMAT = new Intl.DateTimeFormat('ko-KR', {
+  timeZone: 'Asia/Seoul',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
 const formatCouponDate = (isoDate: string) => {
-  const date = new Date(isoDate);
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const day = String(date.getDate()).padStart(2, '0');
-  return `${date.getFullYear()}/${month}/${day}`;
+  const parts = KST_DATE_FORMAT.formatToParts(new Date(isoDate));
+  const getPart = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? '';
+  return `${getPart('year')}/${getPart('month')}/${getPart('day')}`;
 };
 
 interface CouponCardProps {

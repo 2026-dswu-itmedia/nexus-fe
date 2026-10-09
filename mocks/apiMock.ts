@@ -160,8 +160,8 @@ const handlePostReview = async (req: IncomingMessage, res: ServerResponse, artwo
 const VALID_QR_TOKEN = 'mock-qr-token';
 const INACTIVE_QR_TOKEN = 'mock-qr-token-inactive';
 const CLOSED_QR_TOKEN = 'mock-qr-token-closed';
-// 전시 마지막 날(2026-11-06 금 14:00 KST) 만료
-const COUPON_EXPIRES_AT = '2026-11-06T05:00:00.000Z';
+// 쿠폰 발급 종료·만료 시각(2026-11-20 23:59 KST)
+const COUPON_EXPIRES_AT = '2026-11-20T14:59:00.000Z';
 
 interface MockCoupon {
   id: string;
