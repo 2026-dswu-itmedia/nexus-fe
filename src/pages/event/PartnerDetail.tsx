@@ -76,7 +76,7 @@ const PartnerDetail = () => {
 
   return (
     <div className="-mx-5 flex flex-1 flex-col bg-[radial-gradient(14rem_circle_at_50%_20.625rem,rgb(255_255_255/0.16),transparent)] px-5">
-      <BackHeader variant="dark" title={partner.name} />
+      <BackHeader variant="dark" title={partner.name} fallbackTo="/event/partner" />
       <div className="flex flex-1 flex-col pt-5 pb-5">
         <Reveal className="text-center">
           <p className="text-regular-12 text-white-075">OFFICIAL PARTNER</p>
