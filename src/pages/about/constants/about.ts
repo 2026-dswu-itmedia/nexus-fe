@@ -8,7 +8,7 @@ import type {
 
 export const INTRO_PARAGRAPHS: TextSegment[][] = [
   [
-    { text: 'IT 미디어공학전공', bold: true },
+    { text: 'IT미디어공학전공', bold: true },
     {
       text: '은 융합적 사고와 창의적 기술력을 바탕으로 미래 IT 산업을 선도할 여성 인재를 양성하고 있습니다. 4년간의 치열한 학문적 여정과 공학적 탐구의 결실을 담은 ',
     },
