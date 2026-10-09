@@ -22,7 +22,8 @@ const WorkCard = ({ work }: WorkCardProps) => {
       <SkeletonImage
         src={imageUrl}
         alt={`${work.title} 대표 이미지`}
-        className="aspect-3/2 w-full"
+        className="w-full"
+        placeholderClassName="aspect-3/2"
       />
       <p className="text-semibold-16 mt-6 text-black">{work.title}</p>
       <p className="text-regular-14 text-subtext-500 mt-2 whitespace-pre-line">{work.summary}</p>

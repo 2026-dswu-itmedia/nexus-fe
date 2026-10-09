@@ -23,7 +23,8 @@ const WorkHero = ({ work }: WorkHeroProps) => {
         src={imageUrl}
         alt={`${work.title} 대표 이미지`}
         loading="eager"
-        className="aspect-3/2 w-full"
+        className="w-full"
+        placeholderClassName="aspect-3/2"
       />
       <div className="mt-9 flex items-center gap-1">
         <h1 className="text-semibold-24 text-black">{work.title}</h1>
