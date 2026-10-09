@@ -189,7 +189,7 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 
 ## 8. Phase 7 — 마무리
 
-- [ ] 모든 페이지 모바일(360px) 가로 스크롤 점검, `index.html` `<title>` 등 메타 정리.
+- [ ] 모든 페이지 모바일(360px) 가로 스크롤 점검, `index.html` `<title>` 등 메타 정리. (메타·OG는 2026-10-09 완료, 360px 점검은 남음)
 - [ ] 보류 목록 중 사용자가 진행 결정한 항목 수행(카카오 공유, 로띠). (쿠폰 이미지 저장은 Phase 4에서 정적 이미지 다운로드로 완료.)
 - [ ] 받은 실제 이미지(키비주얼, 404 캐릭터, 협찬사 로고·제품, 제휴사 아이콘, 파트너 캐릭터)로 placeholder 교체. 매장별 쿠폰 이미지 3장은 2026-10-05 반영 완료(`images/partners/img-coupon-*.png`). 파일명 NFC 정규화·공백 제거 확인. 학생·작품 사진을 교체하면 `pnpm optimize:images`를 다시 실행한다.
 
@@ -319,6 +319,9 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
   - 감상평 서버 제한은 trim 후 1~1,000자지만 UI는 시안대로 80자 제한을 유지한다(서버 범위 안).
   - 검증: `localhost:5173`에서 `POST /visitor-sessions` 201 → `Set-Cookie: visitor_session`(`HttpOnly; Secure; SameSite=None`) 저장, 재호출 200(`created: false`), `GET /coupons/me` 쿠키 포함 404 `COUPON_NOT_FOUND` / 미포함 401, 감상평 목록 200. 감상평 작성·쿠폰 발급은 실데이터가 남아 호출하지 않았다.
   - QR 토큰 파라미터명 `qrToken` 확정(백엔드 안내).
+- 2026-10-09 (배포 후 OG·메타):
+  - 배포 도메인 `https://it-media-nexus.vercel.app`. `index.html`에 description·theme-color·canonical·OG·Twitter 메타 추가. 제목 "Welcome to NEX:US", 이미지는 카카오 초대장 템플릿과 같은 `public/og-image.png`(1600×1600 정사각이라 `twitter:card`는 `summary`). `<title>`은 기존 `NEXUS` 유지.
+  - SPA라 크롤러는 `index.html`만 읽으므로 OG는 사이트 전체 공통(작품별 미리보기는 SSR 필요, 범위 밖). 초대장 FAB은 메시지 템플릿을 쓰므로 OG와 무관.
 - (확인 필요) 작품별 인스타그램 카드뉴스 게시물 URL 9개 — 게시 후 `pages/works/constants/instagramLinks.ts`에 채운다.
 - ~~(확인 필요) PARTNER QR 토큰의 URL 파라미터명 (`qrToken` 가정).~~ 2026-10-09 백엔드 안내로 `qrToken` 확정.
 - (확인 필요) 쿠폰 저장 이미지(`images/partners/img-coupon-*.png`)에 유효기간 2026/11/06이 박혀 있다. API 만료일(2026/11/20)과 다르므로 이미지 교체 필요.
