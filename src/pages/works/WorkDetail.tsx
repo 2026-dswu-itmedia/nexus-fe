@@ -24,7 +24,7 @@ const WorkDetail = () => {
   // ABOUT과 같은 scroll reveal. 처음 보이는 섹션은 위에서부터 0.1초 간격으로 떠오른다.
   return (
     <>
-      <BackHeader />
+      <BackHeader fallbackTo="/works" />
       <div className="flex flex-1 flex-col pt-5 pb-6">
         <Reveal>
           <WorkHero work={work} />

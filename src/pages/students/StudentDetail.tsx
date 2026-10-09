@@ -28,7 +28,7 @@ const StudentDetail = () => {
   // WORKS 상세와 같은 scroll reveal. 프로필 → 참여 작품 순으로 0.1초 간격.
   return (
     <>
-      <BackHeader />
+      <BackHeader fallbackTo="/students" />
       <div className="flex flex-1 flex-col pt-6 pb-6">
         <Reveal>
           <section className="flex items-end gap-4">

@@ -35,7 +35,7 @@ const SponsorDetail = () => {
 
   return (
     <>
-      <BackHeader variant="dark" title={sponsor.name} />
+      <BackHeader variant="dark" title={sponsor.name} fallbackTo="/event/sponsor" />
       <div className="flex flex-1 flex-col pt-5 pb-5">
         <Reveal className="text-center">
           <p className="text-regular-12 text-white-075">OFFICIAL SPONSOR</p>
