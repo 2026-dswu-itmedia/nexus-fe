@@ -25,4 +25,6 @@ export interface Partner {
   usageNote: string; // 쿠폰 카드 우측 하단 안내. 예: "1일 1회 사용 가능"
   mapUrl: string; // 매장 위치 외부 링크
   couponImage: string; // "쿠폰을 이미지로 저장하기"로 내려받는 매장별 쿠폰 이미지 URL
+  // 매장별 쿠폰 사용 기한(한국시간 그날 끝). 서버 쿠폰은 방문자당 1장이라 expiresAt이 매장 구분 없이 같아 프론트에서 관리한다.
+  couponExpiresAt: string;
 }
