@@ -12,7 +12,7 @@ const NotFound = () => {
   };
 
   return (
-    <div className="max-w-mobile bg-ivory-bg mx-auto flex min-h-dvh flex-col px-5 py-10">
+    <div className="max-w-mobile bg-ivory-bg shadow-mobile-frame mx-auto flex min-h-dvh flex-col px-5 py-10">
       <div className="flex flex-1 items-center justify-center">
         <img src={notFoundGraphic} alt="페이지를 찾을 수 없습니다" className="w-[10.75rem]" />
       </div>

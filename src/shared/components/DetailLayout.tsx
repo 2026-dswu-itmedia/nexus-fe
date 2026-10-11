@@ -11,7 +11,7 @@ interface DetailLayoutProps {
 const DetailLayout = ({ variant = 'light' }: DetailLayoutProps) => {
   return (
     <div
-      className={`max-w-mobile mx-auto flex min-h-dvh flex-col ${variant === 'dark' ? 'bg-navy-100 text-white-100' : 'bg-ivory-bg'}`}
+      className={`max-w-mobile shadow-mobile-frame mx-auto flex min-h-dvh flex-col ${variant === 'dark' ? 'bg-navy-100 text-white-100' : 'bg-ivory-bg'}`}
     >
       <main className="flex flex-1 flex-col px-5">
         <Suspense fallback={<PageFallback />}>

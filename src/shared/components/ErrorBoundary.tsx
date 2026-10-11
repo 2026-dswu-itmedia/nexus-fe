@@ -15,7 +15,7 @@ const ErrorBoundary = () => {
   };
 
   return (
-    <div className="max-w-mobile bg-ivory-bg mx-auto flex min-h-dvh flex-col">
+    <div className="max-w-mobile bg-ivory-bg shadow-mobile-frame mx-auto flex min-h-dvh flex-col">
       <div className="text-regular-16 text-subtext-700 flex flex-1 items-center justify-center px-5 text-center">
         <p>{message}</p>
       </div>
