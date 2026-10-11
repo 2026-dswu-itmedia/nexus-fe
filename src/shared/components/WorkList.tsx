@@ -1,8 +1,9 @@
 import WorkListItem from '@/shared/components/WorkListItem';
 import { FADE_TRANSITION, ROW_STAGGER } from '@/shared/constants/motion';
 import useIsViewTransitioning from '@/shared/hooks/useIsViewTransitioning';
+import useSkipEntranceMotion from '@/shared/hooks/useSkipEntranceMotion';
 import type { Work } from '@/shared/types/exhibition';
-import { motion, useReducedMotion } from 'motion/react';
+import { motion } from 'motion/react';
 
 interface WorkListProps {
   works: Work[];
@@ -14,14 +15,14 @@ interface WorkListProps {
 // 필터·선택이 바뀔 때 다시 올라오게 하려면 호출부에서 key를 그 값으로 준다.
 // 페이지 전환 슬라이드 중에는 숨긴 채로 기다렸다가 슬라이드가 끝난 뒤 올라온다(useIsViewTransitioning).
 const WorkList = ({ works, emptyMessage, className }: WorkListProps) => {
-  const shouldReduceMotion = useReducedMotion();
+  const shouldSkipEntrance = useSkipEntranceMotion();
   const isViewTransitioning = useIsViewTransitioning();
 
   return (
     <>
       <ul className={className}>
         {works.map((work, index) =>
-          shouldReduceMotion ? (
+          shouldSkipEntrance ? (
             <li key={work.id}>
               <WorkListItem work={work} />
             </li>
@@ -39,8 +40,8 @@ const WorkList = ({ works, emptyMessage, className }: WorkListProps) => {
       </ul>
       {works.length === 0 && (
         <motion.p
-          initial={shouldReduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: !shouldReduceMotion && isViewTransitioning ? 0 : 1 }}
+          initial={shouldSkipEntrance ? false : { opacity: 0 }}
+          animate={{ opacity: !shouldSkipEntrance && isViewTransitioning ? 0 : 1 }}
           transition={FADE_TRANSITION}
           className="text-regular-14 text-subtext-700 py-10 text-center"
         >

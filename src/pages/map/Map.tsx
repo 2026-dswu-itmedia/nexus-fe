@@ -5,8 +5,9 @@ import type { Booth, FloorPlanArea } from '@/pages/map/types/booth';
 import WorkList from '@/shared/components/WorkList';
 import { FADE_TRANSITION } from '@/shared/constants/motion';
 import useIsViewTransitioning from '@/shared/hooks/useIsViewTransitioning';
+import useSkipEntranceMotion from '@/shared/hooks/useSkipEntranceMotion';
 import { getWorks, getWorksByIds } from '@/shared/utils/exhibition';
-import { motion, useReducedMotion } from 'motion/react';
+import { motion } from 'motion/react';
 import { useSearchParams } from 'react-router-dom';
 
 const WORKS = getWorks();
@@ -21,10 +22,10 @@ const Map = () => {
   // 처음 진입한 쿼리로 되돌아가고, GNB로 다시 들어와도 이전 선택이 남는다(WORKS 필터와 같은 이유).
   // WORKS 상세의 위치 아이콘은 ?work=만 넘기고, 그 작품이 있는 부스는 여기서 찾는다.
   const [searchParams, setSearchParams] = useSearchParams();
-  const shouldReduceMotion = useReducedMotion();
+  const shouldSkipEntrance = useSkipEntranceMotion();
   // 작품 상세의 위치 아이콘(슬라이드 전환)으로 들어올 때는 슬라이드가 끝난 뒤에 페이드인한다.
   const isViewTransitioning = useIsViewTransitioning();
-  const fadeAnimate = { opacity: !shouldReduceMotion && isViewTransitioning ? 0 : 1 };
+  const fadeAnimate = { opacity: !shouldSkipEntrance && isViewTransitioning ? 0 : 1 };
   const workParam = searchParams.get('work');
   const selectedBooth = findBoothById(searchParams.get('booth')) ?? findBoothByWorkId(workParam);
   // 자리 선택은 내부 약도가 있는 부스에서, 그 부스의 작품일 때만 유효하다.
@@ -75,9 +76,9 @@ const Map = () => {
 
   return (
     <div className="flex flex-1 flex-col pt-6 pb-6">
-      {/* 진입 시 배치도가 페이드인된다. OS의 "동작 줄이기"가 켜져 있으면 바로 보여준다. */}
+      {/* 진입 시 배치도가 페이드인된다. OS의 "동작 줄이기"가 켜져 있거나 뒤로 가기로 돌아오면 바로 보여준다. */}
       <motion.div
-        initial={shouldReduceMotion ? false : { opacity: 0 }}
+        initial={shouldSkipEntrance ? false : { opacity: 0 }}
         animate={fadeAnimate}
         transition={FADE_TRANSITION}
       >
@@ -93,7 +94,7 @@ const Map = () => {
         <motion.div
           key={`floor-plan:${selectedBooth.id}`}
           className="mt-6"
-          initial={shouldReduceMotion ? false : { opacity: 0 }}
+          initial={shouldSkipEntrance ? false : { opacity: 0 }}
           animate={fadeAnimate}
           transition={FADE_TRANSITION}
         >

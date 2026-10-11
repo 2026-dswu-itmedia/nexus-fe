@@ -10,8 +10,9 @@ import BackHeader from '@/shared/components/BackHeader';
 import Reveal from '@/shared/components/Reveal';
 import { FADE_TRANSITION, REVEAL_STAGGER, ROW_STAGGER } from '@/shared/constants/motion';
 import useIsViewTransitioning from '@/shared/hooks/useIsViewTransitioning';
+import useSkipEntranceMotion from '@/shared/hooks/useSkipEntranceMotion';
 import { LoaderCircle } from 'lucide-react';
-import { motion, useReducedMotion } from 'motion/react';
+import { motion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
@@ -27,7 +28,7 @@ interface ToastState {
 // 시안(Partner] Step1/Step2/Loading.png) 측정값: 헤더 아래 24px, 설명→카드 40px, 카드 간격 8px.
 const Partner = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const shouldReduceMotion = useReducedMotion();
+  const shouldSkipEntrance = useSkipEntranceMotion();
   const isViewTransitioning = useIsViewTransitioning();
   const qrToken = searchParams.get(QR_TOKEN_PARAM);
   const [issueToast, setIssueToast] = useState<ToastState | null>(null);
@@ -127,7 +128,7 @@ const Partner = () => {
                   ) : (
                     <ul>
                       {PARTNERS.map((partner, index) =>
-                        shouldReduceMotion ? (
+                        shouldSkipEntrance ? (
                           <li key={partner.id}>
                             <CouponRow partner={partner} isEnabled={hasCoupon} />
                           </li>

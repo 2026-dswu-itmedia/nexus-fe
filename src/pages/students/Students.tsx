@@ -3,8 +3,9 @@ import { getChosung, getChosungFilters, type Chosung } from '@/pages/students/ut
 import FilterTabs from '@/shared/components/FilterTabs';
 import SearchInput from '@/shared/components/SearchInput';
 import useIsViewTransitioning from '@/shared/hooks/useIsViewTransitioning';
+import useSkipEntranceMotion from '@/shared/hooks/useSkipEntranceMotion';
 import { getStudents } from '@/shared/utils/exhibition';
-import { motion, useReducedMotion } from 'motion/react';
+import { motion } from 'motion/react';
 import { useSearchParams } from 'react-router-dom';
 
 const STUDENTS = getStudents();
@@ -21,7 +22,7 @@ const parseChosung = (value: string | null): Chosung | null =>
 const Students = () => {
   // WORKS와 같이 필터를 URL 쿼리로 유지한다(새로고침·상세에서 복귀 시 유지, 링크 공유 가능).
   const [searchParams, setSearchParams] = useSearchParams();
-  const shouldReduceMotion = useReducedMotion();
+  const shouldSkipEntrance = useSkipEntranceMotion();
   // 상세에서 뒤로 돌아오는 슬라이드가 끝난 뒤에 행이 올라오게 한다(WorkList와 동일).
   const isViewTransitioning = useIsViewTransitioning();
   const keyword = searchParams.get('q') ?? '';
@@ -66,7 +67,7 @@ const Students = () => {
       {/* 필터가 바뀌면 ul이 다시 마운트되어 결과 목록 전체가 아래에서 올라온다(Works.tsx와 동일). */}
       <ul key={`${normalizedKeyword}|${chosung ?? ''}`} className="mt-5">
         {filteredStudents.map((student, index) =>
-          shouldReduceMotion ? (
+          shouldSkipEntrance ? (
             <li key={student.id}>
               <StudentListItem student={student} />
             </li>
@@ -84,8 +85,8 @@ const Students = () => {
       </ul>
       {filteredStudents.length === 0 && (
         <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: isViewTransitioning ? 0 : 1 }}
+          initial={shouldSkipEntrance ? false : { opacity: 0 }}
+          animate={{ opacity: !shouldSkipEntrance && isViewTransitioning ? 0 : 1 }}
           transition={ROW_TRANSITION}
           className="text-regular-14 text-subtext-700 py-10 text-center"
         >
