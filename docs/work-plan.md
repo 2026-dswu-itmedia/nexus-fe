@@ -121,8 +121,8 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 - [x] `components/WorkHero.tsx`: 대표 이미지(`getWorkImage`, 3:2), 제목(`semibold-24`) + `ic-location-24`(→ `/map?work=`) + `ic-go-link-24`(작품별 인스타그램 카드뉴스, `<a target="_blank">`), `TeamBadge`, 한 줄 소개(`whitespace-pre-line`), `KeywordChip` 3개. 카드뉴스 URL은 `pages/works/constants/instagramLinks.ts`의 `getWorkInstagramUrl(workId)`. **게시 전이라 모두 비어 있고, 비어 있으면 전공 프로필(`shared/constants/links.ts` `INSTAGRAM_PROFILE_URL`, ABOUT 바로가기와 공유)로 이동**. (사용자 요청 2026-10-05. 처음엔 ↗를 카카오 공유로 보고 제외했었음)
 - [x] `components/MemberChips.tsx`: 팀원 이름 + `ChevronRight` 칩(`navy-010` 배경), `Link to=/students/:id`.
 - [x] `components/DescriptionTabs.tsx`: "작품 소개 / 기획 의도" 2탭(`useState`), 활성 탭 네이비 배경, 높이 40px. 본문 `whitespace-pre-line`.
-- [x] `components/ReviewForm.tsx`(시안 `Comment.png`, 2026-10-05 갱신): 자동 높이 textarea(Enter 등록, Shift+Enter 줄바꿈). 4개 상태 — 기본: ✨ + placeholder + 네이비 화살표 / 포커스·미입력: ✨·placeholder 숨김 + `0/80` + 회색 화살표 / 입력 중: `n/80` + 네이비 화살표 / 80자 초과: 글자 수 `semibold-14` 검정 + 회색 화살표 + 아래 `Info` 아이콘 "최대 80자까지 작성 가능해요"(spring pop, `AnimatePresence`). 80자 초과는 입력은 되지만 제출 불가(시안의 `85/80` 상태를 보여주기 위해 hard cap 대신 제출 차단). 전송 중 disabled.
-- [x] `components/ReviewList.tsx`: 2열 그리드 메모지(`min-h` 170px). 배경은 시안 순서 `pink-bg → yellow-bg → green-bg → orange-bg`를 index 순환. 긴 글은 `line-clamp-6`. 로딩 스피너·에러·빈 목록 문구.
+- [x] `components/ReviewForm.tsx`(시안 `Comment.png`, 2026-10-05 갱신): 자동 높이 textarea(최대 5줄 `max-h-24.5`, 넘치면 스크롤바 없이 스크롤, 위로 밀린 내용이 있을 때만 상단 `mask-t-from-70%` 흐림. Enter는 줄바꿈, 등록은 화살표 버튼만 — 모바일 오제출 피드백으로 2026-10-11 변경). 4개 상태 — 기본: ✨ + placeholder + 네이비 화살표 / 포커스·미입력: ✨·placeholder 숨김 + `0/100` + 회색 화살표 / 입력 중: `n/100` + 네이비 화살표 / 100자 초과: 글자 수 `semibold-14` 검정 + 회색 화살표 + 아래 `Info` 아이콘 "최대 100자까지 작성 가능해요"(spring pop, `AnimatePresence`). 100자 초과는 입력은 되지만 제출 불가(시안의 초과 상태를 보여주기 위해 hard cap 대신 제출 차단). 글자 수 제한은 2026-10-11 80자 → 100자로 변경. 전송 중 disabled.
+- [x] `components/ReviewList.tsx`: 2열 그리드 메모지(고정 높이 170px). 배경은 시안 순서 `pink-bg → yellow-bg → green-bg → orange-bg`를 index 순환. 긴 글은 메모지 안에서 세로 스크롤(`scrollbar-hide`), 아래에 남은 내용이 있을 때만 하단 `mask-b-from-70%`로 흐림(2026-10-11, 기존 `line-clamp-6` 대체). 로딩 스피너·에러·빈 목록 문구.
 - [x] `components/ReviewPagination.tsx`: 좌 `<`(1페이지면 disabled 회색) / 우 `>`(hasNext false면 disabled) 48px 네이비 버튼.
 - [x] `components/ReviewSection.tsx`: `page` 상태 + `useReviews` + Form·List·Pagination 조립. `totalPages === 0`이면 페이지네이션 숨김.
 - [x] `WorkDetail.tsx` 조립. `useParams` → `getWorkById`; 없으면 `NotFound` 렌더(`-mx-5` 래퍼).
@@ -316,7 +316,7 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 - 2026-10-09 (실서버 API 연동):
   - 백엔드 임시 배포 `https://43.201.187.129/api`(도메인 구입 후 교체)를 `.env`의 `VITE_API_BASE_URL`로 연결하고 `VITE_API_MOCK`을 비웠다. Base URL은 `shared/apis/api.ts`에서만 읽는다. Swagger(`/api-docs`) 스키마가 기존 타입(`Review`·`ReviewPage`·`PostedReview`·`Coupon`·`ApiError`)과 일치해 API 모듈·훅은 수정하지 않았다.
   - 쿠폰 발급 종료·만료는 2026-11-20 23:59 KST(`2026-11-20T14:59:00Z`). mock 만료 시각도 맞췄다. `CouponCard`의 유효기간은 기기 시간대가 아닌 `Asia/Seoul` 기준으로 표시한다(`Intl.DateTimeFormat`).
-  - 감상평 서버 제한은 trim 후 1~1,000자지만 UI는 시안대로 80자 제한을 유지한다(서버 범위 안).
+  - 감상평 서버 제한은 trim 후 1~1,000자지만 UI는 100자 제한을 둔다(서버 범위 안, 2026-10-11 80자에서 변경).
   - 검증: `localhost:5173`에서 `POST /visitor-sessions` 201 → `Set-Cookie: visitor_session`(`HttpOnly; Secure; SameSite=None`) 저장, 재호출 200(`created: false`), `GET /coupons/me` 쿠키 포함 404 `COUPON_NOT_FOUND` / 미포함 401, 감상평 목록 200. 감상평 작성·쿠폰 발급은 실데이터가 남아 호출하지 않았다.
   - QR 토큰 파라미터명 `qrToken` 확정(백엔드 안내).
 - 2026-10-09 (배포 후 OG·메타):
