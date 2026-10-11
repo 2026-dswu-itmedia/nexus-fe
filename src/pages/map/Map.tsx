@@ -4,6 +4,7 @@ import { BOOTHS, getBoothWorkIds } from '@/pages/map/constants/booths';
 import type { Booth, FloorPlanArea } from '@/pages/map/types/booth';
 import WorkList from '@/shared/components/WorkList';
 import { FADE_TRANSITION } from '@/shared/constants/motion';
+import useIsViewTransitioning from '@/shared/hooks/useIsViewTransitioning';
 import { getWorks, getWorksByIds } from '@/shared/utils/exhibition';
 import { motion, useReducedMotion } from 'motion/react';
 import { useSearchParams } from 'react-router-dom';
@@ -21,6 +22,9 @@ const Map = () => {
   // WORKS 상세의 위치 아이콘은 ?work=만 넘기고, 그 작품이 있는 부스는 여기서 찾는다.
   const [searchParams, setSearchParams] = useSearchParams();
   const shouldReduceMotion = useReducedMotion();
+  // 작품 상세의 위치 아이콘(슬라이드 전환)으로 들어올 때는 슬라이드가 끝난 뒤에 페이드인한다.
+  const isViewTransitioning = useIsViewTransitioning();
+  const fadeAnimate = { opacity: !shouldReduceMotion && isViewTransitioning ? 0 : 1 };
   const workParam = searchParams.get('work');
   const selectedBooth = findBoothById(searchParams.get('booth')) ?? findBoothByWorkId(workParam);
   // 자리 선택은 내부 약도가 있는 부스에서, 그 부스의 작품일 때만 유효하다.
@@ -74,7 +78,7 @@ const Map = () => {
       {/* 진입 시 배치도가 페이드인된다. OS의 "동작 줄이기"가 켜져 있으면 바로 보여준다. */}
       <motion.div
         initial={shouldReduceMotion ? false : { opacity: 0 }}
-        animate={{ opacity: 1 }}
+        animate={fadeAnimate}
         transition={FADE_TRANSITION}
       >
         <BoothMap
@@ -90,7 +94,7 @@ const Map = () => {
           key={`floor-plan:${selectedBooth.id}`}
           className="mt-6"
           initial={shouldReduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={fadeAnimate}
           transition={FADE_TRANSITION}
         >
           <StudioFloorPlan

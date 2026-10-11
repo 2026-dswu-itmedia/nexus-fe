@@ -1,5 +1,6 @@
 import WorkListItem from '@/shared/components/WorkListItem';
 import { FADE_TRANSITION, ROW_STAGGER } from '@/shared/constants/motion';
+import useIsViewTransitioning from '@/shared/hooks/useIsViewTransitioning';
 import type { Work } from '@/shared/types/exhibition';
 import { motion, useReducedMotion } from 'motion/react';
 
@@ -11,8 +12,10 @@ interface WorkListProps {
 
 // WORKS 목록과 MAP 하단 목록이 함께 쓰는 작품 목록. 마운트될 때 행이 순서대로 떠오르므로,
 // 필터·선택이 바뀔 때 다시 올라오게 하려면 호출부에서 key를 그 값으로 준다.
+// 페이지 전환 슬라이드 중에는 숨긴 채로 기다렸다가 슬라이드가 끝난 뒤 올라온다(useIsViewTransitioning).
 const WorkList = ({ works, emptyMessage, className }: WorkListProps) => {
   const shouldReduceMotion = useReducedMotion();
+  const isViewTransitioning = useIsViewTransitioning();
 
   return (
     <>
@@ -26,7 +29,7 @@ const WorkList = ({ works, emptyMessage, className }: WorkListProps) => {
             <motion.li
               key={work.id}
               initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={isViewTransitioning ? { opacity: 0, y: 16 } : { opacity: 1, y: 0 }}
               transition={{ ...FADE_TRANSITION, delay: index * ROW_STAGGER }}
             >
               <WorkListItem work={work} />
@@ -37,7 +40,7 @@ const WorkList = ({ works, emptyMessage, className }: WorkListProps) => {
       {works.length === 0 && (
         <motion.p
           initial={shouldReduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={{ opacity: !shouldReduceMotion && isViewTransitioning ? 0 : 1 }}
           transition={FADE_TRANSITION}
           className="text-regular-14 text-subtext-700 py-10 text-center"
         >

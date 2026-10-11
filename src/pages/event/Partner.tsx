@@ -9,6 +9,7 @@ import { getCouponErrorMessage, isUnrecoverableCouponError } from '@/pages/event
 import BackHeader from '@/shared/components/BackHeader';
 import Reveal from '@/shared/components/Reveal';
 import { FADE_TRANSITION, REVEAL_STAGGER, ROW_STAGGER } from '@/shared/constants/motion';
+import useIsViewTransitioning from '@/shared/hooks/useIsViewTransitioning';
 import { LoaderCircle } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
@@ -27,6 +28,7 @@ interface ToastState {
 const Partner = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const shouldReduceMotion = useReducedMotion();
+  const isViewTransitioning = useIsViewTransitioning();
   const qrToken = searchParams.get(QR_TOKEN_PARAM);
   const [issueToast, setIssueToast] = useState<ToastState | null>(null);
   // StrictMode의 effect 재실행이나 리렌더로 같은 토큰을 두 번 보내지 않게 한다. 토큰이 URL에서 빠지면 비운다.
@@ -133,7 +135,9 @@ const Partner = () => {
                           <motion.li
                             key={partner.id}
                             initial={{ opacity: 0, y: 16 }}
-                            animate={{ opacity: 1, y: 0 }}
+                            animate={
+                              isViewTransitioning ? { opacity: 0, y: 16 } : { opacity: 1, y: 0 }
+                            }
                             transition={{ ...FADE_TRANSITION, delay: index * ROW_STAGGER }}
                           >
                             <CouponRow partner={partner} isEnabled={hasCoupon} />

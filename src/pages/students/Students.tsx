@@ -2,6 +2,7 @@ import StudentListItem from '@/pages/students/components/StudentListItem';
 import { getChosung, getChosungFilters, type Chosung } from '@/pages/students/utils/chosung';
 import FilterTabs from '@/shared/components/FilterTabs';
 import SearchInput from '@/shared/components/SearchInput';
+import useIsViewTransitioning from '@/shared/hooks/useIsViewTransitioning';
 import { getStudents } from '@/shared/utils/exhibition';
 import { motion, useReducedMotion } from 'motion/react';
 import { useSearchParams } from 'react-router-dom';
@@ -21,6 +22,8 @@ const Students = () => {
   // WORKS와 같이 필터를 URL 쿼리로 유지한다(새로고침·상세에서 복귀 시 유지, 링크 공유 가능).
   const [searchParams, setSearchParams] = useSearchParams();
   const shouldReduceMotion = useReducedMotion();
+  // 상세에서 뒤로 돌아오는 슬라이드가 끝난 뒤에 행이 올라오게 한다(WorkList와 동일).
+  const isViewTransitioning = useIsViewTransitioning();
   const keyword = searchParams.get('q') ?? '';
   const chosung = parseChosung(searchParams.get('chosung'));
 
@@ -71,7 +74,7 @@ const Students = () => {
             <motion.li
               key={student.id}
               initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={isViewTransitioning ? { opacity: 0, y: 16 } : { opacity: 1, y: 0 }}
               transition={{ ...ROW_TRANSITION, delay: index * ROW_STAGGER }}
             >
               <StudentListItem student={student} />
@@ -82,7 +85,7 @@ const Students = () => {
       {filteredStudents.length === 0 && (
         <motion.p
           initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
+          animate={{ opacity: isViewTransitioning ? 0 : 1 }}
           transition={ROW_TRANSITION}
           className="text-regular-14 text-subtext-700 py-10 text-center"
         >
