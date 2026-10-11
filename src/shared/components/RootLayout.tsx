@@ -1,3 +1,4 @@
+import { markNavigatedInApp } from '@/shared/hooks/useSkipEntranceMotion';
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import { Outlet, ScrollRestoration, useLocation, useNavigationType } from 'react-router-dom';
 
@@ -30,6 +31,9 @@ const RootLayout = () => {
     }
     document.documentElement.dataset.navDirection = direction;
     hasUAVisualTransitionRef.current = false;
+    if (navigationType !== 'POP') {
+      markNavigatedInApp();
+    }
   }, [navigationType, key]);
 
   return (
