@@ -4,17 +4,10 @@ import { isAxiosError } from 'axios';
 import InputArrowIcon from '@/shared/assets/icons/ic-input-arrow-24.svg?react';
 import { Info } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import {
-  useLayoutEffect,
-  useRef,
-  useState,
-  type ChangeEvent,
-  type FormEvent,
-  type KeyboardEvent,
-} from 'react';
+import { useLayoutEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
 
-// 시안(Comment.png) 기준 최대 글자 수. 서버 한도(1,000자)보다 훨씬 작다.
-const MAX_CONTENT_LENGTH = 80;
+// UI 최대 글자 수(줄바꿈 포함). 서버 한도(1,000자)보다 훨씬 작다.
+const MAX_CONTENT_LENGTH = 100;
 
 // 서버 오류(429·500 등)는 한국어 message를 내려주므로 그대로 보여주고, 응답 자체가 없으면 네트워크 안내로 대체한다.
 const getErrorMessage = (error: unknown) => {
@@ -31,12 +24,14 @@ interface ReviewFormProps {
 
 // 시안의 네 가지 상태:
 // 1. 기본(포커스 없음·미입력): ✨ + placeholder, 화살표 네이비
-// 2. 포커스·미입력: ✨·placeholder 숨김, "0/80", 화살표 회색
-// 3. 입력 중(80자 이내): "n/80", 화살표 네이비
-// 4. 80자 초과: 글자 수 굵게, 화살표 회색, 아래에 "최대 80자까지 작성 가능해요" 안내
+// 2. 포커스·미입력: ✨·placeholder 숨김, "0/100", 화살표 회색
+// 3. 입력 중(100자 이내): "n/100", 화살표 네이비
+// 4. 100자 초과: 글자 수 굵게, 화살표 회색, 아래에 "최대 100자까지 작성 가능해요" 안내
+// 모바일에서 실수로 제출되지 않도록 Enter는 줄바꿈이고, 등록은 화살표 버튼으로만 한다.
 const ReviewForm = ({ workId, onPosted }: ReviewFormProps) => {
   const [content, setContent] = useState('');
   const [isFocused, setIsFocused] = useState(false);
+  const [isTopFadeVisible, setIsTopFadeVisible] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const shouldReduceMotion = useReducedMotion();
   const { mutate, isPending, error } = usePostReview(workId);
@@ -46,12 +41,22 @@ const ReviewForm = ({ workId, onPosted }: ReviewFormProps) => {
   const canSubmit = trimmedContent.length >= 1 && !isOverLimit && !isPending;
   const isIdle = !isFocused && content.length === 0;
 
+  // 위로 밀려 올라간 내용이 있을 때만 상단을 흐려, 쓰던 내용이 사라진 게 아니라 위에 있음을 알린다.
+  // 커서는 늘 아래쪽에 있으므로 하단은 흐리지 않는다.
+  const updateTopFade = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+    setIsTopFadeVisible(textarea.scrollTop > 0);
+  };
+
   // 입력 내용 길이에 맞춰 textarea 높이를 늘린다(시안 4번째 상태처럼 여러 줄로 감긴다).
+  // 줄바꿈을 연달아 쳐도 끝없이 길어지지 않도록 5줄(max-h-24.5 = 19.6px × 5)까지만 늘리고, 그 뒤는 스크롤바 없이 스크롤한다.
   useLayoutEffect(() => {
     const textarea = textareaRef.current;
     if (!textarea) return;
     textarea.style.height = 'auto';
     textarea.style.height = `${textarea.scrollHeight}px`;
+    updateTopFade();
   }, [content]);
 
   const handleContentChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -74,14 +79,6 @@ const ReviewForm = ({ workId, onPosted }: ReviewFormProps) => {
     submit();
   };
 
-  // 이전 input과 같이 Enter로 등록한다. 줄바꿈은 Shift+Enter.
-  const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === 'Enter' && !event.shiftKey && !event.nativeEvent.isComposing) {
-      event.preventDefault();
-      submit();
-    }
-  };
-
   return (
     <form onSubmit={handleSubmit}>
       <div className="border-navy-100 flex items-end gap-2 border-b-[1.5px] py-2">
@@ -91,13 +88,13 @@ const ReviewForm = ({ workId, onPosted }: ReviewFormProps) => {
           rows={1}
           value={content}
           onChange={handleContentChange}
-          onKeyDown={handleKeyDown}
+          onScroll={updateTopFade}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           disabled={isPending}
           placeholder={isIdle ? '작품에 대한 따뜻한 감상평을 남겨주세요' : ''}
           aria-label="감상평"
-          className="text-regular-14 placeholder:text-subtext-900 flex-1 resize-none overflow-hidden bg-transparent text-black outline-none"
+          className={`text-regular-14 placeholder:text-subtext-900 scrollbar-hide max-h-24.5 flex-1 resize-none overflow-y-auto bg-transparent text-black outline-none ${isTopFadeVisible ? 'mask-t-from-70%' : ''}`}
         />
         {!isIdle && (
           <span className="text-regular-14 text-subtext-500 shrink-0" aria-live="polite">
