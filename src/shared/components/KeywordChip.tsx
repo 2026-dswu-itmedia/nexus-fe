@@ -3,10 +3,10 @@ interface KeywordChipProps {
 }
 
 const KeywordChip = ({ label }: KeywordChipProps) => {
-  // 시안은 0.5px지만, 칩 위치가 소수점에 걸리면 iOS Safari(3x)에서 0.5px 선이 사라지는 경우가 있어 1px로 둔다.
-  // 인라인 span은 3x 아이폰에서 줄 안 조각으로 나뉘며 왼쪽 테두리가 빠지는 경우가 있어 inline-block으로 한 상자로 그린다.
+  // 3x 아이폰(12 Pro·14 Pro)에서 칩 위치에 따라 0.5px border의 왼쪽 선이 그려지지 않는 경우가 있어
+  // 선은 안쪽 ring(box-shadow)으로 그린다. border 0.5px 자리를 padding에 더해 크기·선 위치를 border일 때와 같게 맞춘다.
   return (
-    <span className="bg-white-100 border-navy-025 text-regular-14 text-subtext-700 inline-block border-[0.5px] px-2 py-1">
+    <span className="bg-white-100 ring-navy-025 text-regular-14 text-subtext-700 px-[calc(0.5rem+0.5px)] py-[calc(0.25rem+0.5px)] ring-[0.5px] ring-inset">
       {label}
     </span>
   );
