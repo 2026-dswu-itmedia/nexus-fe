@@ -1,4 +1,6 @@
 import Button from '@/shared/components/Button';
+import Reveal from '@/shared/components/Reveal';
+import { REVEAL_STAGGER } from '@/shared/constants/motion';
 import { ChevronRight } from 'lucide-react';
 import { isRouteErrorResponse, useRouteError } from 'react-router-dom';
 
@@ -17,13 +19,16 @@ const ErrorBoundary = () => {
   return (
     <div className="max-w-mobile bg-ivory-bg shadow-mobile-frame mx-auto flex min-h-dvh flex-col">
       <div className="text-regular-16 text-subtext-700 flex flex-1 items-center justify-center px-5 text-center">
-        <p>{message}</p>
+        {/* 404 페이지처럼 문구 → 버튼 순서로 떠오른다 */}
+        <Reveal>
+          <p>{message}</p>
+        </Reveal>
       </div>
-      <div className="px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
+      <Reveal className="px-5 pb-[calc(1.5rem+env(safe-area-inset-bottom))]" delay={REVEAL_STAGGER}>
         <Button onClick={handleHomeClick} icon={<ChevronRight className="size-6" />}>
           NEX:US 홈페이지 바로가기
         </Button>
-      </div>
+      </Reveal>
     </div>
   );
 };
