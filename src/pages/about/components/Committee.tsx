@@ -6,6 +6,7 @@ const ROW_STAGGER = 0.1;
 
 // 시안처럼 위 행이 아래 행의 모서리를 덮도록 앞 행일수록 z-index가 높다.
 // Reveal의 transform이 행마다 쌓임 맥락을 만들어, 지정하지 않으면 뒤 행이 위에 그려진다.
+// 이 z-index가 페이지 전체로 새어 나가 플로팅 버튼(z-10)을 덮지 않도록 ul에 isolate로 쌓임 맥락을 가둔다.
 const ROW_Z_CLASSES = ['z-30', 'z-20', 'z-10'] as const;
 
 const Committee = () => {
@@ -16,7 +17,7 @@ const Committee = () => {
           졸업준비위원회
         </h2>
       </Reveal>
-      <ul className="flex flex-col gap-1">
+      <ul className="isolate flex flex-col gap-1">
         {COMMITTEE_MEMBERS.map(({ role, name }, index) => (
           <li key={`${role}-${name}`} className={ROW_Z_CLASSES[index]}>
             <Reveal

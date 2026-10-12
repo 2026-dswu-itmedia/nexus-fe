@@ -77,7 +77,13 @@ const NaverMap = () => {
 
     return () => {
       isCancelled = true;
-      map?.destroy();
+      // destroy()가 SDK 안에서 예외를 던지는 경우가 있다(인증 실패 등. removeDOMListener의 null 참조).
+      // 언마운트 중 예외는 라우터 에러 화면으로 이어져 다음 페이지가 안 열리므로, 정리 실패는 무시한다.
+      try {
+        map?.destroy();
+      } catch {
+        // 지도 DOM은 컨테이너와 함께 제거되므로 정리하지 못해도 화면에는 영향이 없다.
+      }
     };
   }, []);
 
