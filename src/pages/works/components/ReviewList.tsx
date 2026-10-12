@@ -1,6 +1,7 @@
 import type { Review } from '@/pages/works/types/review';
 import { LoaderCircle } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
+import { useLayoutEffect, useRef, useState } from 'react';
 
 // 시안의 메모지 순서(좌상단부터 행 우선): 핑크(+1.5°) → 노랑(-2°) → 초록(-1.5°) → 주황(+2°). 각도는 Figma 값.
 const MEMO_STYLES = [
@@ -10,12 +11,40 @@ const MEMO_STYLES = [
   'bg-orange-bg rotate-2',
 ] as const;
 
-const MEMO_CLASS = 'min-h-42.5 p-4';
-const CONTENT_CLASS = 'text-regular-14 line-clamp-6 whitespace-pre-line text-black';
+const MEMO_CLASS = 'h-42.5 p-4';
+const CONTENT_CLASS =
+  'text-regular-14 scrollbar-hide h-full overflow-y-auto break-words whitespace-pre-line text-black';
 const MESSAGE_CLASS = 'text-regular-14 text-subtext-700 py-10 text-center';
 
 // 메모지 하나당 벌어지는 간격(초). 8개가 0.5초 안에 차례로 붙는다.
 const MEMO_STAGGER = 0.07;
+
+// 메모지 높이를 넘는 감상평은 메모지 안에서 스크롤한다(스크롤바는 숨김).
+// 아래에 더 읽을 내용이 남아 있을 때만 하단을 흐리게 해 스크롤할 수 있음을 알린다.
+// 메모지 배경색이 여러 가지라 그라디언트 오버레이 대신 mask로 글자 자체를 흐린다.
+const ReviewMemoContent = ({ content }: { content: string }) => {
+  const contentRef = useRef<HTMLParagraphElement>(null);
+  const [isFadeVisible, setIsFadeVisible] = useState(false);
+
+  const updateFade = () => {
+    const element = contentRef.current;
+    if (!element) return;
+    // 소수점 픽셀 오차로 끝까지 내려도 흐림이 남지 않도록 1px 여유를 둔다.
+    setIsFadeVisible(element.scrollHeight - element.clientHeight - element.scrollTop > 1);
+  };
+
+  useLayoutEffect(updateFade, [content]);
+
+  return (
+    <p
+      ref={contentRef}
+      onScroll={updateFade}
+      className={`${CONTENT_CLASS} ${isFadeVisible ? 'mask-b-from-70%' : ''}`}
+    >
+      {content}
+    </p>
+  );
+};
 
 interface ReviewListProps {
   reviews: Review[];
@@ -53,7 +82,7 @@ const ReviewList = ({ reviews, isLoading, isError }: ReviewListProps) => {
         if (shouldReduceMotion) {
           return (
             <li key={review.id} className={`${memoStyle} ${MEMO_CLASS}`}>
-              <p className={CONTENT_CLASS}>{review.content}</p>
+              <ReviewMemoContent content={review.content} />
             </li>
           );
         }
@@ -70,7 +99,7 @@ const ReviewList = ({ reviews, isLoading, isError }: ReviewListProps) => {
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.5, ease: 'easeOut', delay: (index % 8) * MEMO_STAGGER }}
           >
-            <p className={CONTENT_CLASS}>{review.content}</p>
+            <ReviewMemoContent content={review.content} />
           </motion.li>
         );
       })}
