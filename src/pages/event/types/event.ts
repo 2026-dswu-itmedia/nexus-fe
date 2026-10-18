@@ -7,10 +7,17 @@ export interface SponsorLink {
   icon: SponsorLinkIcon;
 }
 
+// 목록 카드 가운데에 들어가는 로고. PNG는 고유 크기가 아니라 Figma 치수(CSS px)로 그려야 해서 크기를 함께 둔다.
+export interface SponsorLogo {
+  src: string;
+  width: number;
+  height: number;
+}
+
 export interface Sponsor {
   id: string;
   name: string;
-  logo: string; // 목록 카드 가운데에 들어가는 로고 이미지 URL
+  logo: SponsorLogo;
   link: SponsorLink;
   description: string; // 상세 인용 소개문. 줄바꿈 \n 포함
   productTitles: string[]; // 협찬 물품명. 여러 개면 한 줄씩 나열

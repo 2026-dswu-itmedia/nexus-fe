@@ -2,9 +2,9 @@ import type { Partner } from '@/pages/event/types/event';
 import berryberryCoupon from '@/shared/assets/images/partners/img-coupon-berryberry-bakery.png';
 import jewelCoupon from '@/shared/assets/images/partners/img-coupon-jewel-changdong.png';
 import osushiCoupon from '@/shared/assets/images/partners/img-coupon-osushi-changdong.png';
-import croissantIcon from '@/shared/assets/images/partners/img-partner-1.svg';
-import sushiIcon from '@/shared/assets/images/partners/img-partner-2.svg';
-import scissorsIcon from '@/shared/assets/images/partners/img-partner-3.svg';
+import croissantIcon from '@/shared/assets/images/partners/img-partner-1.webp';
+import sushiIcon from '@/shared/assets/images/partners/img-partner-2.webp';
+import scissorsIcon from '@/shared/assets/images/partners/img-partner-3.webp';
 
 // 매장별 지도 URL은 확인 전이라 네이버 지도 검색 결과로 연결한다(docs/work-plan.md 확인 필요).
 const getNaverMapSearchUrl = (keyword: string) =>
