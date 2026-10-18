@@ -99,7 +99,7 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 - [x] 지도 표기 정리: NAVER 로고는 SDK 문서상 상시 노출(노출 제어 불가)이라 유지, 지도 데이터 저작권 표기(`mapDataControl`)는 노출 여부를 선택할 수 있는 옵션이라 숨긴다. Maps 이용약관에 "회사가 로고·지정 표시 게재를 요청하면 따라야 한다"는 포괄 조항이 있으므로, 네이버가 요청하면 다시 켠다. (사용자 결정 2026-10-09)
 - [x] `components/QuickLinks.tsx`: `LinkRow` 2개(`logo-duksung-24.svg`, `logo-instagram-24.svg`), `gap-2`.
 - [x] `components/Committee.tsx`: 네이비 제목 바(38px) "졸업준비위원회" + 3행(36px, border + `shadow-card`, 가운데 행 `-rotate-2`). 직책 `regular-14 subtext-700` + 이름 `regular-16 subtext-500`.
-- [x] `components/FloatingActions.tsx`: 우측 하단 FAB 2개(시안 `FAB.png`: 위 공유 `ic-share-24`, 아래 `ic-go-to-top-24`). 48px 흰 원형, `shadow-fab`, `subtext-700`, 세로 `gap-2.5`, **항상 표시**(사용자 결정). 공유는 카카오톡 초대장(`shared/utils/kakaoShare.ts`의 `shareKakaoTemplate`, 메시지 템플릿 ID `INVITATION_TEMPLATE_ID` = 137738). 키 미설정·SDK 로드 실패 시 Web Share API, 미지원 브라우저는 링크 복사 후 3초간 체크 아이콘. `fixed` 래퍼를 `max-w-mobile px-5`로 맞춰 데스크톱에서도 콘텐츠 우측에 붙는다.
+- [x] `components/FloatingActions.tsx`: 우측 하단 FAB 2개(시안 `FAB.png`: 위 공유 `ic-share-24`, 아래 `ic-go-to-top-24`). 48px 흰 원형, `shadow-fab`, `subtext-700`, 세로 `gap-2.5`, ~~**항상 표시**(사용자 결정)~~ → 2026-10-19 3차 QA로 공유 버튼만 항상 표시, 맨 위로 버튼은 한 화면(100vh) 넘게 내렸을 때만 노출(11절). 공유는 카카오톡 초대장(`shared/utils/kakaoShare.ts`의 `shareKakaoTemplate`, 메시지 템플릿 ID `INVITATION_TEMPLATE_ID` = 137738). 키 미설정·SDK 로드 실패 시 Web Share API, 미지원 브라우저는 링크 복사 후 3초간 체크 아이콘. `fixed` 래퍼를 `max-w-mobile px-5`로 맞춰 데스크톱에서도 콘텐츠 우측에 붙는다.
 - [x] `shared/components/Reveal.tsx`(Phase 3에서 `pages/about/components`에서 이동): 스크롤 reveal 래퍼(motion `whileInView`, 아래 24px에서 0.5초 easeOut 페이드업, `once: true`, `amount: 0.2`, `delay` prop). `useReducedMotion`이면 애니메이션 없이 렌더. 소개 문단(구분선+문단 묶음)·일정 행·지도/주소·바로가기 행·위원회 제목/행에 적용, 행 단위 stagger 0.1초. (사용자 요청 2026-10-04)
 - [x] `About.tsx` 조립: `pt-10 gap-20 pb-25`(섹션 간 80px, 하단 100px. 5:7 키비주얼이 GNB 아래 40px에서 시작하면 시안 그래픽 하단 위치와 일치). 맨 아래에 `shared/components/Footer` 렌더(다른 페이지에는 없음).
 - [x] 검증: SSR 문자열 렌더로 전 섹션 출력·외부 링크 `target="_blank"` 확인, `pnpm build`, `pnpm lint` 통과. **브라우저 실측(가로 스크롤·클립보드 복사·FAB)은 Claude 브라우저가 로컬 포트에 접속하지 못해 미수행 — 사용자가 `pnpm dev`로 확인 필요.**
@@ -221,7 +221,7 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
   - 시안의 Footer 배경은 `#505050`(subtext-500)으로 보이나, Phase 1에서 네이비로 확정·구현된 `Footer.tsx`는 건드리지 않았다. 네이비가 맞는지 사용자 확인 필요.
   - 지도는 네이버 지도 JS API v3(사용자 요청). `@types/navermaps` devDependency 추가, `tsconfig.app.json` `types`에 `navermaps` 등록. 키는 `.env`의 `VITE_NAVER_MAP_CLIENT_ID`(`example.env`에 항목 추가). SDK는 index.html이 아닌 `NaverMap.tsx`에서 필요할 때만 script를 주입한다.
   - `ic-check-16.svg`, `ic-share-24.svg`, `ic-go-to-top-24.svg`(신규, 원본 `ic-go-to-top.svg`에 크기 접미사 추가) 고정색도 `currentColor`로 수정.
-  - FAB은 스크롤량과 무관하게 항상 표시(공유 버튼이 함께 있어야 하므로, 사용자 결정 2026-10-04).
+  - FAB은 스크롤량과 무관하게 항상 표시(공유 버튼이 함께 있어야 하므로, 사용자 결정 2026-10-04). → 2026-10-19 맨 위로 버튼만 100vh 이후 노출로 변경(11절).
   - 카카오톡 공유: JS SDK 2.8.3을 `shared/utils/kakaoShare.ts`에서 첫 공유 시 동적 로드(SRI 해시 포함) 후 `Kakao.init(VITE_KAKAO_JS_KEY)`. 타입은 `@types/kakao-js-sdk`가 v1(`Kakao.Link`) 기준이라 쓰지 않고 `shared/types/kakao.d.ts`에 필요한 부분만 선언. 초대장은 카카오 메시지 템플릿(ID 137738) + `Kakao.Share.sendCustom`. 카카오 디벨로퍼스 "JavaScript SDK 도메인"에 `http://localhost:5173`·배포 도메인 등록 필요.
 - 2026-10-04 (Phase 3 구현 중 확정):
   - 감상평 제출 아이콘은 Figma 전용 SVG `ic-input-arrow-24.svg`(2026-10-05 사용자 제공, stroke를 `currentColor`로 변환). 처음엔 lucide `ArrowDown`을 썼으나 시안 아이콘과 모양이 달라 교체했다. 색은 `ReviewForm`의 상태에 따라 `text-navy-100`/`text-subtext-900`로 제어한다.
@@ -322,6 +322,14 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 - 2026-10-09 (배포 후 OG·메타):
   - 배포 도메인 `https://it-media-nexus.vercel.app`. `index.html`에 description·theme-color·canonical·OG·Twitter 메타 추가. 제목 "Welcome to NEX:US", 이미지는 카카오 초대장 템플릿과 같은 `public/og-image.png`(1600×1600 정사각이라 `twitter:card`는 `summary`). `<title>`은 기존 `NEXUS` 유지.
   - SPA라 크롤러는 `index.html`만 읽으므로 OG는 사이트 전체 공통(작품별 미리보기는 SSR 필요, 범위 밖). 초대장 FAB은 메시지 템플릿을 쓰므로 OG와 무관.
+- 2026-10-19 (3차 QA 반영, 이슈 #38, 브랜치 `fix/apply-qa-3`):
+  - 목록 정렬은 `shared/utils/exhibition.ts`에서 모듈 로드 시 한 번만 한다(`getWorks`·`getStudents`가 정렬된 배열 반환). 비교 규칙은 "영문 시작 이름 → 한글 이름" 그룹 순, 그룹 안에서는 `localeCompare('ko', { sensitivity: 'base', numeric: true })`. `getWorksByIds`(MAP 부스 목록·학생 상세 참여 작품)도 같은 순서로 정렬하지만, `getStudentsByIds`(작품 상세 팀원 칩·목록 팀원 이름 나열)는 팀이 정한 순서라 정렬하지 않는다(Figma 시안도 비정렬).
+  - MAP 내부 약도 자동 스크롤은 **부스를 클릭해 약도가 생길 때만** 동작한다(`?work=` 직접 진입·뒤로가기 복귀는 제외, `useRef` 플래그). 목표 위치는 약도 위 24px(`mt-6`과 동일). 아래로 스크롤하면 GNB가 로고 줄만 남기고 접히므로 로고 줄(`header.firstElementChild`) 높이만 빼고, 위로 스크롤하는 경우에는 탭 줄까지 다시 펼쳐지므로 `header.offsetHeight` 전체를 뺀다. 동작 줄이기면 `behavior: 'auto'`.
+  - 작품 상세 팀원 칩은 5명 이상이면 마지막 2명을 중첩 `ul`로 묶어 3/2로 줄바꿈한다(Figma 메모 "공간 부족 시 2개 단위로 줄바꿈되도록 마지막 2개 항목 그룹화"). `ul` 자식은 `li`여야 하므로 묶음은 `li > ul.flex`. 대상은 Hearing·SYNC:0.
+  - ABOUT FAB: 맨 위로 버튼은 `window.scrollY > window.innerHeight`일 때만 렌더(`pages/about/hooks/useIsScrolledPastViewport.ts`, `useSyncExternalStore`로 스크롤 구독 → effect 안 setState 없음, 복원 스크롤도 첫 렌더에 반영). `AnimatePresence` 페이드·스케일 0.2초, 공유 버튼은 `layout`으로 아래 자리로 미끄러진다. 동작 줄이기면 조건 렌더만.
+  - GNB(`TopNavigation`)는 아래로 스크롤하면 **탭 줄만** 접어 로고(NEX:US)만 남기고, 위로 스크롤하면 다시 펼친다(0.3초 easeOut). 구현은 **transform만** 쓴다: `motion.header`를 탭 줄 높이(`nav.offsetHeight`)만큼 `y`로 올리고 로고 줄은 같은 만큼 내려 제자리에 남기며, 탭 줄은 `opacity: 0` + `pointer-events: none`. 처음엔 헤더 전체를 `y: -100%`로 숨겼다가 시안 두 번째 화면대로 로고를 남기도록 바꿨고, 그 다음 탭 줄을 `height: 0`으로 접었더니 헤더 레이아웃 높이가 변해 문서 높이가 바뀌고, 페이지 아래쪽에서 브라우저가 스크롤 위치를 되돌리는 것이 "위로 스크롤"로 읽혀 접혔다 펼쳐지길 반복했다(사용자 리포트 "특정 위치에서 버벅이며 다시 펼쳐짐"). 레이아웃 높이를 고정하고 transform으로만 접어 해결. 방향은 `scroll` 리스너에서 직전 위치와의 차로 판단하며 8px 미만은 무시, 헤더 높이 안쪽에서는 항상 보인다. `lastY`를 effect 시작 시 `window.scrollY`로 두어 뒤로가기 복귀 때 ScrollRestoration(layout effect)이 먼저 옮긴 위치를 "아래로 스크롤"로 오인하지 않게 했다. 5개 페이지 공통(사용자 결정). 2026-10-19 디자이너 비교 끝에 "로고 유지" 버전으로 확정(헤더 전체 숨김 안 함).
+  - 협찬사 로고 3개·제휴 아이콘 3개·`img-event-graphic.svg`(및 `img-404-graphic.svg`)는 전부 `<path>` 없이 PNG 1장이 `<pattern>` fill로 내장된 래스터 SVG였다(내장 PNG 842~1705px, 렌더 10~168px). Chrome의 pattern fill 축소 품질 때문에 흐릿·계단 현상이 난다. 코드(`<img>` + Figma 치수)는 원인이 아니다. 디자이너가 고해상도 PNG로 다시 주기로 함 → 받으면 11절 절차대로 교체.
+- (확인 필요) 제휴사 상세 캐릭터(`img-event-graphic.svg`) 고해상도 PNG 수령 대기(2026-10-19, 협찬사 로고·제휴 아이콘은 같은 날 교체 완료). 받으면 11절 절차 진행.
 - (확인 필요) 작품별 인스타그램 카드뉴스 게시물 URL 9개 — 게시 후 `pages/works/constants/instagramLinks.ts`에 채운다.
 - ~~(확인 필요) PARTNER QR 토큰의 URL 파라미터명 (`qrToken` 가정).~~ 2026-10-09 백엔드 안내로 `qrToken` 확정.
 - (확인 필요) 쿠폰 저장 이미지(`images/partners/img-coupon-*.png`)에 유효기간 2026/11/06이 박혀 있다. API 만료일(2026/11/20)과 다르므로 이미지 교체 필요.
@@ -338,3 +346,16 @@ NEX:US 전시 웹사이트 전체 페이지 구현 계획. 여러 세션에 걸�
 - IA에만 있고 시안·데이터에 없는 항목: STUDENTS 상세 학번·인사말·SNS·이메일, ABOUT 지하철·버스 안내. (MAP 카테고리 필터는 2026-10-05 IA에서 제거.)
 - `AGENTS.md`가 4페이지 기준으로 낡아 있음(EVENT 누락) — 사용자 요청 시 갱신.
 - `shared/assets/images/partners/` PNG(약 6.8MB) 리사이즈 — `optimizeImages.mjs`의 `TARGETS`에 추가하면 되지만, 직접 import 경로(확장자 포함)로 쓰는 곳이 있으면 함께 고쳐야 한다.
+- `img-404-graphic.svg`도 PNG 내장 래스터 SVG(2026-10-19 확인). 3차 QA 요청 범위 밖이라 그대로 두었고, 흐려 보인다는 의견이 있으면 협찬·제휴 이미지와 같은 방식으로 교체한다.
+
+## 11. 3차 QA 반영 (이슈 #38, 브랜치 `fix/apply-qa-3`, 2026-10-19)
+
+- [x] 작품·학생 목록 정렬: `shared/utils/exhibition.ts`에서 영문 → 한글, 그룹 안 가나다·알파벳순. WORKS·MAP 전체 목록·MAP 부스 목록·학생 상세 참여 작품에 적용. 결과 `Blue Room, Hearing, NOROON: 노른, POCO, SignBridge, SYNC:0, V-O, 마음 [ㅇㄱ], 저승명부록` / `강민선, 곽가린, 권규리, …`.
+- [x] MAP 스튜디오 2~4 클릭 시 내부 약도가 상단에 오도록 자동 스크롤(`Map.tsx`).
+- [x] 작품 상세 팀원 칩 5명 이상이면 마지막 2명 묶어 3/2 줄바꿈(`MemberChips.tsx`).
+- [x] ABOUT 맨 위로 FAB은 한 화면(100vh) 넘게 내렸을 때만 노출, 공유 버튼은 항상(`FloatingActions.tsx`, `hooks/useIsScrolledPastViewport.ts`).
+- [x] GNB 아래 스크롤 시 탭 줄만 접어 로고만 남기고, 위 스크롤 시 다시 펼침. 전 페이지(`TopNavigation.tsx`).
+- [x] 협찬사 로고 3개를 디자이너 PNG로 교체(2026-10-19): 처음 받은 640×96 파일을 투명 여백만 잘라 PNG로 넣었다가, 같은 날 다시 받은 고해상도 원본(4000×600, 내용 1265~2859px)으로 교체했다. `sharp().trim()`으로 여백을 제거하고 Figma 폭의 3배(171×45 / 282×55 / 333×29)로 줄여 **무손실 WebP**(2~7KB)로 `images/partners/img-*-logo.webp`에 저장. 내용 비율이 Figma 치수(57×15 / 94×19 / 111×10)와 일치해 `Sponsor.logo`를 `{ src, width, height }`(`SponsorLogo`)로 바꾸고 `SponsorListItem`의 `<img width height>`로 그 치수를 지정한다. 기존 SVG 3개 삭제, `docs/convention.md` 예외 문구 갱신.
+- [x] 제휴 아이콘 3개를 디자이너 PNG로 교체(2026-10-19): 처음 받은 160×160 파일을 그대로 넣었다가 고해상도 원본(1000×1000, 아이콘이 가운데 여백을 두고 들어 있는 정사각)으로 교체했다. 여백은 디자이너가 둔 그대로 두고 최대 렌더 56px의 3배인 168×168 WebP(q80, 4~6KB)로 줄여 `img-partner-{1,2,3}.webp`(베리베리=1, 오스시=2, 쥬얼=3, 기존 번호 유지)에 저장. `size-8`/`size-14` 클래스가 크기를 정하므로 `partners.ts` import만 바꾸고 컴포넌트 수정 없음. 기존 SVG 3개 삭제. 크기가 제각각이라 `optimizeImages.mjs` 대신 1회성 `sharp` 스크립트로 변환했고, 원본 PNG는 디자이너 전달 폴더에만 둔다.
+- [ ] 캐릭터(`img-event-graphic.svg`, 제휴사 상세 168px) 교체(PNG 수령 대기): 받은 PNG가 폭 504px보다 크면 `sharp`로 줄여 WebP 저장, 아니면 그대로 `images/graphic/`에 두고 `PartnerDetail.tsx` import 교체·SVG 삭제. `w-42` 클래스가 크기를 정하므로 컴포넌트 수정 없음.
+- [x] `pnpm build`, `pnpm lint` 통과. **브라우저 실측(정렬 표시·MAP 스크롤·칩 3/2·FAB 노출·GNB 숨김, 특히 WORKS 상세 → 뒤로가기 복귀 시 GNB가 숨겨지지 않는지)은 Claude 브라우저 확장이 연결되지 않아 미수행 — 사용자가 `pnpm dev`로 확인 필요.** 복귀 시 GNB가 숨겨지면 `TopNavigation` 스크롤 리스너에 "단일 이벤트 점프(|delta| > 100px)는 `lastY`만 갱신" 보정을 추가한다.

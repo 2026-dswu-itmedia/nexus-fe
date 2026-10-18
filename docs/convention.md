@@ -265,7 +265,7 @@ import Guide from '@/shared/assets/icons/Guide.svg?react';
 <Guide className="h-6 w-6" />;
 ```
 
-예외로, PNG가 내장된 Figma export SVG(래스터 그래픽)와 사진·일러스트 이미지는 `?react`로 JS 번들에 넣지 않고 URL import + `<img src>`로 사용한다(예: `img-404-graphic.svg`, 제휴사 아이콘·로고, 쿠폰·제품 이미지).
+예외로, PNG가 내장된 Figma export SVG(래스터 그래픽)와 사진·일러스트 이미지는 `?react`로 JS 번들에 넣지 않고 URL import + `<img src>`로 사용한다(예: `img-404-graphic.svg`, 제휴사 아이콘, 협찬사 로고·쿠폰·제품 이미지). 로고처럼 Figma 치수대로 그려야 하는 PNG는 `<img width height>`로 크기를 지정한다(PNG의 고유 크기는 해상도일 뿐이다).
 
 단색 아이콘은 SVG 내부의 고정 색상 대신 `currentColor`를 사용해 Tailwind `text-*`로 색을 제어한다.
 
