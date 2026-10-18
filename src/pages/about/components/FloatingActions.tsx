@@ -1,8 +1,10 @@
 import { INVITATION_TEMPLATE_ID } from '@/pages/about/constants/about';
+import useIsScrolledPastViewport from '@/pages/about/hooks/useIsScrolledPastViewport';
 import GoToTopIcon from '@/shared/assets/icons/ic-go-to-top-24.svg?react';
 import ShareIcon from '@/shared/assets/icons/ic-share-24.svg?react';
 import { shareKakaoTemplate } from '@/shared/utils/kakaoShare';
 import { Check } from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
 // 링크 복사 완료 표시(체크 아이콘)를 유지하는 시간
@@ -11,9 +13,14 @@ const COPIED_FEEDBACK_MS = 3000;
 const FAB_CLASS =
   'bg-white-100 shadow-fab text-subtext-700 pointer-events-auto flex size-12 items-center justify-center rounded-full';
 
-// 공유·맨 위로 FAB 두 개. 시안(FAB.png)대로 세로로 쌓고 항상 떠 있는다.
+const FAB_TRANSITION = { duration: 0.2, ease: 'easeOut' } as const;
+
+// 공유·맨 위로 FAB 두 개. 시안(FAB.png)대로 세로로 쌓는다. 공유는 항상 떠 있고,
+// 맨 위로는 한 화면 넘게 내렸을 때만 나타난다(페이지 맨 위에서 상시 노출되는 게 어색하다는 QA, 2026-10-19).
 const FloatingActions = () => {
   const [isLinkCopied, setIsLinkCopied] = useState(false);
+  const isScrolledPastViewport = useIsScrolledPastViewport();
+  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     if (!isLinkCopied) return;
@@ -45,15 +52,18 @@ const FloatingActions = () => {
   };
 
   const handleScrollTopClick = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: shouldReduceMotion ? 'auto' : 'smooth' });
   };
 
   return (
     // fixed 요소는 뷰포트 기준이므로, 모바일 폭 컨테이너(max-w-mobile + px-5)와 같은 영역을 다시 만들어
     // 데스크톱에서도 버튼이 콘텐츠 우측 하단에 오게 한다. 래퍼는 클릭을 가로채지 않도록 pointer-events-none.
     <div className="max-w-mobile pointer-events-none fixed inset-x-0 bottom-5 z-10 mx-auto flex flex-col items-end gap-2.5 px-5">
-      <button
+      {/* 맨 위로 버튼이 사라지면 공유 버튼이 아래 자리로 미끄러져 내려온다(layout). */}
+      <motion.button
         type="button"
+        layout={!shouldReduceMotion}
+        transition={FAB_TRANSITION}
         onClick={handleShareClick}
         aria-label={isLinkCopied ? '링크가 복사되었습니다' : '공유하기'}
         className={FAB_CLASS}
@@ -63,15 +73,24 @@ const FloatingActions = () => {
         ) : (
           <ShareIcon className="size-6" aria-hidden="true" />
         )}
-      </button>
-      <button
-        type="button"
-        onClick={handleScrollTopClick}
-        aria-label="맨 위로"
-        className={FAB_CLASS}
-      >
-        <GoToTopIcon className="size-6" aria-hidden="true" />
-      </button>
+      </motion.button>
+      <AnimatePresence initial={false}>
+        {isScrolledPastViewport && (
+          <motion.button
+            key="go-to-top"
+            type="button"
+            initial={shouldReduceMotion ? false : { opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={shouldReduceMotion ? undefined : { opacity: 0, scale: 0.8 }}
+            transition={FAB_TRANSITION}
+            onClick={handleScrollTopClick}
+            aria-label="맨 위로"
+            className={FAB_CLASS}
+          >
+            <GoToTopIcon className="size-6" aria-hidden="true" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
