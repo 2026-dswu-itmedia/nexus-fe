@@ -1,4 +1,4 @@
-import notFoundGraphic from '@/shared/assets/images/graphic/img-404-graphic.svg';
+import notFoundGraphic from '@/shared/assets/images/graphic/img-404-graphic.png';
 import Button from '@/shared/components/Button';
 import Reveal from '@/shared/components/Reveal';
 import { REVEAL_STAGGER } from '@/shared/constants/motion';
