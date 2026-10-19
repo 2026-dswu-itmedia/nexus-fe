@@ -7,10 +7,14 @@ import { FADE_TRANSITION } from '@/shared/constants/motion';
 import useIsViewTransitioning from '@/shared/hooks/useIsViewTransitioning';
 import useSkipEntranceMotion from '@/shared/hooks/useSkipEntranceMotion';
 import { getWorks, getWorksByIds } from '@/shared/utils/exhibition';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
+import { useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 const WORKS = getWorks();
+
+// 자동 스크롤 후 내부 약도 위에 남기는 여백(px). 약도의 mt-6(24px)과 같다.
+const FLOOR_PLAN_SCROLL_GAP = 24;
 
 const findBoothById = (id: string | null) => BOOTHS.find((booth) => booth.id === id);
 
@@ -23,6 +27,10 @@ const Map = () => {
   // WORKS 상세의 위치 아이콘은 ?work=만 넘기고, 그 작품이 있는 부스는 여기서 찾는다.
   const [searchParams, setSearchParams] = useSearchParams();
   const shouldSkipEntrance = useSkipEntranceMotion();
+  const shouldReduceMotion = useReducedMotion();
+  const floorPlanRef = useRef<HTMLDivElement>(null);
+  // 부스를 "클릭해서" 내부 약도가 뜰 때만 스크롤한다. ?work= 직접 진입이나 뒤로가기 복귀에는 움직이지 않는다.
+  const shouldScrollToFloorPlanRef = useRef(false);
   // 작품 상세의 위치 아이콘(슬라이드 전환)으로 들어올 때는 슬라이드가 끝난 뒤에 페이드인한다.
   const isViewTransitioning = useIsViewTransitioning();
   const fadeAnimate = { opacity: !shouldSkipEntrance && isViewTransitioning ? 0 : 1 };
@@ -60,8 +68,29 @@ const Map = () => {
   // 작품이 하나인 부스도 바로 이동하지 않고 하단 목록에서 고르게 한다(사용자 결정 2026-10-05).
   // 같은 부스를 다시 누르면 선택이 풀려 전체 목록으로 돌아가고, 부스가 바뀌면 자리 선택도 풀린다.
   const handleBoothClick = (booth: Booth) => {
-    updateSelection(selectedBooth?.id === booth.id ? null : booth.id, null);
+    const isDeselecting = selectedBooth?.id === booth.id;
+    shouldScrollToFloorPlanRef.current = !isDeselecting && booth.floorPlan !== undefined;
+    updateSelection(isDeselecting ? null : booth.id, null);
   };
+
+  // 내부 약도가 화면 아래에 생기면 사용자가 모를 수 있어, 약도가 화면 상단에 오도록 스크롤해 알린다(사용자 요청 2026-10-19).
+  // 아래로 스크롤하면 GNB가 로고 줄만 남기고 접히므로(TopNavigation) 로고 줄 높이만 피하고,
+  // 위로 스크롤할 때는 탭 줄까지 다시 펼쳐지므로 GNB 전체 높이만큼 더 올려 약도를 가리지 않게 한다.
+  useEffect(() => {
+    const floorPlan = floorPlanRef.current;
+    if (!shouldScrollToFloorPlanRef.current || !floorPlan) return;
+    shouldScrollToFloorPlanRef.current = false;
+
+    const header = document.querySelector('header');
+    const floorPlanTop = floorPlan.getBoundingClientRect().top + window.scrollY;
+    let top = floorPlanTop - FLOOR_PLAN_SCROLL_GAP;
+    const isScrollingUp = top - (header?.offsetHeight ?? 0) < window.scrollY;
+    const stickyHeight = isScrollingUp
+      ? (header?.offsetHeight ?? 0)
+      : ((header?.firstElementChild as HTMLElement | null)?.offsetHeight ?? 0);
+    top -= stickyHeight;
+    window.scrollTo({ top, behavior: shouldReduceMotion ? 'auto' : 'smooth' });
+  }, [selectedBooth?.id, shouldReduceMotion]);
 
   const handleAreaClick = (area: FloorPlanArea) => {
     updateSelection(selectedBooth?.id ?? null, selectedWorkId === area.workId ? null : area.workId);
@@ -93,6 +122,7 @@ const Map = () => {
       {selectedBooth?.floorPlan && (
         <motion.div
           key={`floor-plan:${selectedBooth.id}`}
+          ref={floorPlanRef}
           className="mt-6"
           initial={shouldSkipEntrance ? false : { opacity: 0 }}
           animate={fadeAnimate}

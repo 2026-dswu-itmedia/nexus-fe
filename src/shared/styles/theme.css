@@ -93,4 +93,33 @@
   /* Blur (Figma 값의 절반: Figma blur 값과 CSS blur() 반경의 기준이 다름) */
   --blur-fab: 2px; /* Figma Background blur 4 */
   --blur-coupon: 10px; /* Figma Layer blur 20 */
+
+  /* ===== Animation ===== */
+
+  /* 데스크톱 배경 캐릭터가 둥실 떠다니는 움직임. 주기·위상은 캐릭터마다 animation-duration/delay로 다르게 준다. */
+  --animate-float: float 3.5s ease-in-out infinite;
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-6px);
+    }
+  }
+
+  /* 데스크톱 배경 로고 위를 빛줄기가 왼쪽에서 오른쪽으로 훑고 잠시 쉰다.
+     배경 그라데이션을 상자의 3배 폭으로 두고 position을 100% → 0으로 옮기면 띠가 왼쪽 밖에서 들어와 오른쪽 밖으로 나간다. */
+  --animate-shimmer: shimmer 2.4s ease-in-out infinite;
+
+  @keyframes shimmer {
+    0% {
+      background-position: 100% 0;
+    }
+    60%,
+    100% {
+      background-position: 0 0;
+    }
+  }
 }

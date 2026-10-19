@@ -8,7 +8,7 @@ import { getSubjectParticle } from '@/pages/event/utils/particle';
 import { saveCouponImage } from '@/pages/event/utils/saveCouponImage';
 import DownloadIcon from '@/shared/assets/icons/ic-download-16.svg?react';
 import LocationIcon from '@/shared/assets/icons/ic-location-24.svg?react';
-import eventGraphic from '@/shared/assets/images/graphic/img-event-graphic.svg';
+import eventGraphic from '@/shared/assets/images/graphic/img-event-graphic.png';
 import BackHeader from '@/shared/components/BackHeader';
 import Button from '@/shared/components/Button';
 import LinkRow from '@/shared/components/LinkRow';
