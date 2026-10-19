@@ -1,12 +1,12 @@
 import type { Sponsor } from '@/pages/event/types/event';
-import cheremimakaLogo from '@/shared/assets/images/partners/img-cheremimaka-logo.svg';
+import cheremimakaLogo from '@/shared/assets/images/partners/img-cheremimaka-logo.webp';
 import cheremimakaProduct1 from '@/shared/assets/images/partners/img-cheremimarker-1.png';
 import inclearProduct1 from '@/shared/assets/images/partners/img-inclear-1.png';
 import inclearProduct2 from '@/shared/assets/images/partners/img-inclear-2.png';
-import inclearLogo from '@/shared/assets/images/partners/img-inclear-logo.svg';
+import inclearLogo from '@/shared/assets/images/partners/img-inclear-logo.webp';
 import innergarmProduct1 from '@/shared/assets/images/partners/img-innergarm-1.png';
 import innergarmProduct2 from '@/shared/assets/images/partners/img-innergarm-2.png';
-import innergarmLogo from '@/shared/assets/images/partners/img-innergarm-logo.svg';
+import innergarmLogo from '@/shared/assets/images/partners/img-innergarm-logo.webp';
 
 // 소개문·물품명은 시안(Sponsor] 협찬사 상세 - *.png) 기준.
 // 인클리어 카카오톡 채널("인클리어하자!!")의 공개 URL은 확인 전이라 카카오톡 스토어로 임시 연결한다(docs/work-plan.md 확인 필요).
@@ -14,7 +14,7 @@ export const SPONSORS: Sponsor[] = [
   {
     id: 'inclear',
     name: '인클리어',
-    logo: inclearLogo,
+    logo: { src: inclearLogo, width: 57, height: 15 },
     link: { label: '인클리어하자!!', url: 'https://pf.kakao.com/_zxmgVK', icon: 'kakao' },
     description:
       '"여성 건강의 모든 것"\n속과 겉을 모두 케어하는\n토탈 페미닌 케어 전문브랜드 \'인클리어\'',
@@ -24,7 +24,7 @@ export const SPONSORS: Sponsor[] = [
   {
     id: 'innergarm',
     name: '이너감',
-    logo: innergarmLogo,
+    logo: { src: innergarmLogo, width: 94, height: 19 },
     link: {
       label: 'innergarm_official',
       url: 'https://www.instagram.com/innergarm_official/',
@@ -38,7 +38,7 @@ export const SPONSORS: Sponsor[] = [
   {
     id: 'cheremimaka',
     name: '체리미마카',
-    logo: cheremimakaLogo,
+    logo: { src: cheremimakaLogo, width: 111, height: 10 },
     link: {
       label: 'cheremimaka',
       url: 'https://www.instagram.com/cheremimaka/',
