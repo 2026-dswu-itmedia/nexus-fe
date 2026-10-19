@@ -1,3 +1,4 @@
+import DesktopDecoration from '@/shared/components/DesktopDecoration';
 import { markNavigatedInApp } from '@/shared/hooks/useSkipEntranceMotion';
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import { Outlet, ScrollRestoration, useLocation, useNavigationType } from 'react-router-dom';
@@ -38,6 +39,7 @@ const RootLayout = () => {
 
   return (
     <>
+      <DesktopDecoration />
       <Outlet />
       <ScrollRestoration />
     </>
