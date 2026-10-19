@@ -194,10 +194,13 @@ const TopNavigation = () => {
               to={path}
               end={path === '/'}
               draggable={false}
+              // iOS Safari에서 탭을 누를 때 기울어진 활성 탭 가장자리에 흰 선이 간헐적으로 비치는 문제 대응(2026-10-19).
+              // transform-gpu로 처음부터 고정 GPU 레이어에 두고, 활성 상태의 border-color가 currentColor(흰색)로
+              // 풀리지 않도록 navy로 명시한다. 정지 상태 모양은 바뀌지 않는다.
               className={({ isActive }) =>
-                `text-semibold-16 shrink-0 px-3 py-2 transition duration-300 ease-out ${
+                `text-semibold-16 shrink-0 transform-gpu px-3 py-2 transition duration-300 ease-out ${
                   isActive
-                    ? 'bg-navy-100 text-white-100 -rotate-8'
+                    ? 'border-navy-100 bg-navy-100 text-white-100 -rotate-8'
                     : 'border-navy-010 bg-white-100 text-navy-100 border'
                 }`
               }
