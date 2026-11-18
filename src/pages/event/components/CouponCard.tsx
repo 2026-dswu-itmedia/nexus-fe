@@ -24,12 +24,13 @@ interface CouponCardProps {
   partner: Partner;
   // null이면 아직 QR 인증을 하지 않은 상태. 내용을 흐리게 가리고 가운데에 "QR 스캔하러 가기"를 띄운다.
   coupon: Coupon | null;
+  isEventEnded: boolean;
 }
 
 // 흰 쿠폰 카드. 점선 양끝의 반원 notch는 카드 테두리 위에 올린 네이비 원이다(카드 p-5 바깥 20px 지점이 중심).
 // 미인증 상태(시안 Brand=*, Status=Disabled)에서도 점선과 notch는 선명하게 두고 글자·아이콘만 blur-coupon으로 가린다.
-const CouponCard = ({ partner, coupon }: CouponCardProps) => {
-  const isLocked = coupon === null;
+const CouponCard = ({ partner, coupon, isEventEnded }: CouponCardProps) => {
+  const isLocked = coupon === null || isEventEnded;
   const isExpired =
     coupon !== null && (coupon.status === 'EXPIRED' || isPastPartnerExpiry(partner));
   const lockedClass = isLocked ? 'blur-coupon select-none' : '';
@@ -73,7 +74,13 @@ const CouponCard = ({ partner, coupon }: CouponCardProps) => {
       {isLocked && (
         // 카드 전체 기준 정중앙에 버튼을 올린다. Step 안내 페이지로 보낸다.
         <div className="absolute inset-0 flex items-center justify-center">
-          <CouponActionButton to="/event/partner">QR 스캔하러 가기</CouponActionButton>
+          {isEventEnded ? (
+            <p role="alert" className="text-semibold-14 text-navy-100 px-4 text-center">
+              쿠폰 이벤트가 종료되었습니다
+            </p>
+          ) : (
+            <CouponActionButton to="/event/partner">QR 스캔하러 가기</CouponActionButton>
+          )}
         </div>
       )}
     </article>
