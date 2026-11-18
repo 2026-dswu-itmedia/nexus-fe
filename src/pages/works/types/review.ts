@@ -1,4 +1,4 @@
-// docs/api-spec.md "작품 감상평" 응답 구조
+// 정적 방명록에 보존한 작품 감상평 응답 구조
 export interface Review {
   id: string;
   content: string;
@@ -16,8 +16,4 @@ export interface ReviewPagination {
 export interface ReviewPage {
   items: Review[];
   pagination: ReviewPagination;
-}
-
-export interface PostedReview extends Review {
-  artworkId: string;
 }

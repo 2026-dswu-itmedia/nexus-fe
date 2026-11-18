@@ -36,7 +36,7 @@ const WorkDetail = () => {
           <DescriptionTabs description={work.description} purpose={work.purpose} />
         </Reveal>
         <Reveal className="mt-12" delay={0.3}>
-          <ReviewSection workId={work.id} />
+          <ReviewSection key={work.id} workId={work.id} />
         </Reveal>
       </div>
     </>

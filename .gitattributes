@@ -1,1 +1,2 @@
 * text=auto eol=lf
+src/pages/works/constants/review.json -text !eol whitespace=cr-at-eol
