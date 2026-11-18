@@ -16,9 +16,6 @@ import { REVEAL_STAGGER } from '@/shared/constants/motion';
 import { LoaderCircle } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 
-// 쿠폰 카드와 같은 크기(320×232)의 흰 틀. 조회 중·실패 상태를 카드 자리에 그대로 보여준다.
-const CARD_FRAME_CLASS = 'bg-white-100 flex h-58 flex-col items-center justify-center gap-4 p-5';
-
 // 네이비 배경(DetailLayout dark). 시안 측정값: 헤더 아래 20px, 라벨→제목 12px, 제목→링크 24px,
 // 링크→캐릭터 40px, 캐릭터(168×131)→안내 40px, 안내→쿠폰 카드 16px, 카드→주의 문구 16px, 저장 버튼은 바닥에서 20px.
 // 캐릭터 뒤의 은은한 빛은 시안에서 중심(가로 중앙, 위에서 330px) 흰색 16%에서 반지름 약 230px까지 옅어진다.
@@ -26,13 +23,14 @@ const PartnerDetail = () => {
   const { partnerId = '' } = useParams<{ partnerId: string }>();
   const partner = getPartnerById(partnerId);
   const { data: coupon, isLoading, isError } = useMyCoupon();
+  const issuedCoupon = isError ? null : (coupon ?? null);
 
   // 쿠폰이 있을 때만(저장 버튼이 보일 때) 이미지를 미리 받아 둔다. 탭 시점에 받으면 iOS 공유 시트가 열리지 않는다.
   const couponImageFileName = `nexus-coupon-${partnerId}.png`;
   const couponImageFile = useCouponImageFile(
     partner?.couponImage ?? '',
     couponImageFileName,
-    partner !== undefined && coupon != null,
+    partner !== undefined && issuedCoupon !== null,
   );
 
   if (!partner) {
@@ -44,22 +42,16 @@ const PartnerDetail = () => {
     );
   }
 
-  const issuedCoupon = coupon ?? null;
-
   const handleSaveClick = () => {
     void saveCouponImage(partner.couponImage, couponImageFileName, couponImageFile);
   };
 
   const couponCard = isLoading ? (
-    <div className={CARD_FRAME_CLASS}>
+    <div className="bg-white-100 flex h-58 items-center justify-center">
       <LoaderCircle className="text-navy-100 size-8 animate-spin" aria-label="쿠폰 확인 중" />
     </div>
-  ) : isError ? (
-    <div className={CARD_FRAME_CLASS} role="alert">
-      <p className="text-regular-14 text-subtext-700 text-center">쿠폰 이벤트가 종료되었습니다</p>
-    </div>
   ) : (
-    <CouponCard partner={partner} coupon={issuedCoupon} />
+    <CouponCard partner={partner} coupon={issuedCoupon} isEventEnded={isError} />
   );
 
   return (
