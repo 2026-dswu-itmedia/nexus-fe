@@ -1,9 +1,7 @@
-import CouponActionButton from '@/pages/event/components/CouponActionButton';
 import CouponCard from '@/pages/event/components/CouponCard';
 import { getPartnerById } from '@/pages/event/constants/partners';
 import useCouponImageFile from '@/pages/event/hooks/useCouponImageFile';
 import useMyCoupon from '@/pages/event/hooks/useMyCoupon';
-import { getCouponErrorMessage } from '@/pages/event/utils/couponError';
 import { getSubjectParticle } from '@/pages/event/utils/particle';
 import { saveCouponImage } from '@/pages/event/utils/saveCouponImage';
 import DownloadIcon from '@/shared/assets/icons/ic-download-16.svg?react';
@@ -27,7 +25,7 @@ const CARD_FRAME_CLASS = 'bg-white-100 flex h-58 flex-col items-center justify-c
 const PartnerDetail = () => {
   const { partnerId = '' } = useParams<{ partnerId: string }>();
   const partner = getPartnerById(partnerId);
-  const { data: coupon, isLoading, isError, error, refetch } = useMyCoupon();
+  const { data: coupon, isLoading, isError } = useMyCoupon();
 
   // 쿠폰이 있을 때만(저장 버튼이 보일 때) 이미지를 미리 받아 둔다. 탭 시점에 받으면 iOS 공유 시트가 열리지 않는다.
   const couponImageFileName = `nexus-coupon-${partnerId}.png`;
@@ -52,23 +50,13 @@ const PartnerDetail = () => {
     void saveCouponImage(partner.couponImage, couponImageFileName, couponImageFile);
   };
 
-  const handleRetryClick = () => {
-    void refetch();
-  };
-
-  // 조회 중·실패는 "미발급"과 구분한다. 실패를 미발급으로 보여주면 쿠폰이 있는 방문객이 다시 QR을 찍으러 가게 된다.
   const couponCard = isLoading ? (
     <div className={CARD_FRAME_CLASS}>
       <LoaderCircle className="text-navy-100 size-8 animate-spin" aria-label="쿠폰 확인 중" />
     </div>
   ) : isError ? (
     <div className={CARD_FRAME_CLASS} role="alert">
-      <p className="text-regular-14 text-subtext-700 text-center">
-        쿠폰 정보를 불러오지 못했어요
-        <br />
-        {getCouponErrorMessage(error)}
-      </p>
-      <CouponActionButton onClick={handleRetryClick}>다시 시도</CouponActionButton>
+      <p className="text-regular-14 text-subtext-700 text-center">쿠폰 이벤트가 종료되었습니다</p>
     </div>
   ) : (
     <CouponCard partner={partner} coupon={issuedCoupon} />
