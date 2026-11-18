@@ -75,7 +75,7 @@ const CouponCard = ({ partner, coupon, isEventEnded }: CouponCardProps) => {
         // 카드 전체 기준 정중앙에 버튼을 올린다. Step 안내 페이지로 보낸다.
         <div className="absolute inset-0 flex items-center justify-center">
           {isEventEnded ? (
-            <p role="alert" className="bg-white-100/90 text-semibold-14 text-navy-100 px-4 py-2">
+            <p role="alert" className="text-semibold-14 text-navy-100 px-4 text-center">
               쿠폰 이벤트가 종료되었습니다
             </p>
           ) : (
