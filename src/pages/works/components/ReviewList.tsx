@@ -1,5 +1,4 @@
 import type { Review } from '@/pages/works/types/review';
-import { LoaderCircle } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import { useLayoutEffect, useRef, useState } from 'react';
 
@@ -48,30 +47,13 @@ const ReviewMemoContent = ({ content }: { content: string }) => {
 
 interface ReviewListProps {
   reviews: Review[];
-  isLoading: boolean;
-  isError: boolean;
 }
 
-const ReviewList = ({ reviews, isLoading, isError }: ReviewListProps) => {
+const ReviewList = ({ reviews }: ReviewListProps) => {
   const shouldReduceMotion = useReducedMotion();
 
-  if (isLoading) {
-    return (
-      <div className="flex justify-center py-10">
-        <LoaderCircle
-          className="text-navy-100 size-6 animate-spin"
-          aria-label="감상평 불러오는 중"
-        />
-      </div>
-    );
-  }
-
-  if (isError) {
-    return <p className={MESSAGE_CLASS}>감상평을 불러오지 못했습니다.</p>;
-  }
-
   if (reviews.length === 0) {
-    return <p className={MESSAGE_CLASS}>아직 감상평이 없어요. 첫 감상평을 남겨주세요</p>;
+    return <p className={MESSAGE_CLASS}>아직 감상평이 없어요.</p>;
   }
 
   return (
