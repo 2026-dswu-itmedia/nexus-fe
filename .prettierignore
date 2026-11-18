@@ -2,6 +2,9 @@ dist
 node_modules
 pnpm-lock.yaml
 
+# 서버에서 받은 방명록 응답 원본을 유지한다
+src/pages/works/constants/review.json
+
 # 문서·템플릿은 기존 서식을 유지한다
 *.md
 .github
